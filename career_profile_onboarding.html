@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Snagajob — Build Your Career Profile</title>
+  <style>
+    :root {
+      --purple: #5b3ff8; --purple-light: #EEEDFE; --purple-mid: #CECBF6; --purple-dark: #3C3489;
+      --green-bg: #EAF3DE; --green: #97C459; --green-dark: #27500A;
+      --amber-bg: #FAEEDA; --amber: #EF9F27;
+      --red-bg: #FCEBEB; --red: #E24B4A;
+      --dark: #1A1035; --text: #1A1035; --muted: #6B6584;
+      --border: rgba(26,16,53,0.12); --bg: #F8F7FF; --white: #fff;
+      --r-card: 14px; --r-btn: 24px; --r-pill: 20px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 400; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .app { width: 100%; max-width: 390px; min-height: 100vh; background: var(--white); position: relative; display: flex; flex-direction: column; box-shadow: 0 0 40px rgba(91,63,248,0.08); }
+    .progress-bar { height: 3px; background: var(--purple-light); flex-shrink: 0; }
+    .progress-fill { height: 100%; background: var(--purple); transition: width 0.4s ease; width: 0%; }
+    .screen { display: none; flex-direction: column; flex: 1; padding: 20px 20px 32px; overflow-y: auto; min-height: calc(100vh - 3px); }
+    .screen.active { display: flex; }
+    .back-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px; padding: 0 0 18px; display: flex; align-items: center; gap: 6px; font-family: inherit; }
+    .screen-label { font-size: 11px; font-weight: 500; color: var(--purple); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    h1 { font-size: 26px; font-weight: 500; line-height: 1.25; color: var(--dark); margin-bottom: 8px; }
+    .subtitle { font-size: 15px; color: var(--muted); line-height: 1.55; margin-bottom: 24px; }
+
+    /* Fields */
+    .field { margin-bottom: 18px; }
+    .field-label { display: block; font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 7px; }
+    input[type="text"] { width: 100%; padding: 13px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 16px; font-family: inherit; color: var(--text); background: var(--white); outline: none; transition: border-color 0.2s; }
+    input[type="text"]:focus { border-color: var(--purple); }
+    textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-family: inherit; color: var(--text); resize: none; outline: none; min-height: 72px; line-height: 1.5; transition: border-color 0.2s; }
+    textarea:focus { border-color: var(--purple); }
+    .text-muted { font-size: 12px; color: var(--muted); margin-top: 5px; display: block; }
+    .name-row { display: flex; gap: 10px; }
+    .name-row .field { flex: 1; margin-bottom: 0; }
+
+    /* Autocomplete */
+    .autocomplete-wrap { position: relative; }
+    .autocomplete-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 50; max-height: 200px; overflow-y: auto; display: none; }
+    .autocomplete-dropdown.open { display: block; }
+    .autocomplete-item { padding: 11px 16px; font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: var(--purple-light); }
+
+    /* Chips */
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .chip { padding: 8px 14px; border: 1px solid var(--border); border-radius: var(--r-pill); font-size: 14px; font-family: inherit; cursor: pointer; background: var(--white); color: var(--text); transition: all 0.15s; user-select: none; line-height: 1; }
+    .chip:hover { border-color: var(--purple-mid); background: var(--purple-light); }
+    .chip.selected { background: var(--purple-light); border-color: var(--purple); color: var(--purple); font-weight: 500; }
+    .chip.inferred { background: var(--green-bg); border-color: var(--green); color: var(--green-dark); font-weight: 500; }
+    .chip.inferred::before { content: '✦ '; font-size: 10px; }
+    .chip.single-select.selected::before { content: '✓ '; font-size: 11px; }
+
+    /* Buttons */
+    .btn-primary { width: 100%; padding: 15px; background: var(--purple); color: white; border: none; border-radius: var(--r-btn); font-size: 16px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-secondary { width: 100%; padding: 15px; background: transparent; color: var(--purple); border: 1.5px solid var(--purple); border-radius: var(--r-btn); font-size: 16px; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .btn-secondary:hover { background: var(--purple-light); }
+    .btn-ghost { background: none; border: none; color: var(--muted); font-size: 14px; font-family: inherit; cursor: pointer; padding: 10px 0; text-align: center; width: 100%; }
+    .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: auto; padding-top: 24px; }
+    .add-btn { border: 1.5px dashed var(--purple-mid); border-radius: var(--r-card); padding: 13px; text-align: center; cursor: pointer; color: var(--purple); font-size: 14px; font-weight: 500; background: none; width: 100%; font-family: inherit; transition: all 0.15s; }
+    .add-btn:hover { background: var(--purple-light); border-color: var(--purple); }
+
+    /* Option cards */
+    .option-card { padding: 15px 16px; border: 1.5px solid var(--border); border-radius: var(--r-card); cursor: pointer; transition: all 0.15s; display: flex; align-items: flex-start; gap: 14px; margin-bottom: 10px; }
+    .option-card:hover { border-color: var(--purple-mid); background: var(--purple-light); }
+    .option-card.selected { border-color: var(--purple); background: var(--purple-light); }
+    .option-card-icon { font-size: 26px; flex-shrink: 0; }
+    .option-card-title { font-size: 15px; font-weight: 500; color: var(--dark); margin-bottom: 3px; }
+    .option-card-desc { font-size: 13px; color: var(--muted); line-height: 1.45; }
+
+    /* Activity cards */
+    .act-card { border: 1px solid var(--border); border-radius: var(--r-card); margin-bottom: 10px; overflow: hidden; }
+    .act-card-hdr { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: var(--white); transition: background 0.15s; }
+    .act-card-hdr:hover { background: var(--purple-light); }
+    .act-card.filled .act-card-hdr { background: var(--purple-light); }
+    .act-card-left { display: flex; align-items: center; gap: 12px; }
+    .act-card-icon { font-size: 22px; }
+    .act-card-title { font-size: 15px; font-weight: 500; color: var(--dark); }
+    .act-card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .act-card-chevron { font-size: 16px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+    .act-card.open .act-card-chevron { transform: rotate(180deg); }
+    .act-card-body { display: none; padding: 14px 16px; border-top: 1px solid var(--border); }
+    .act-card.open .act-card-body { display: block; }
+    .act-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; background: var(--purple); color: white; border-radius: 9px; font-size: 11px; font-weight: 500; padding: 0 4px; margin-left: 6px; }
+
+    /* Work exp entries */
+    .exp-entry { border: 1px solid var(--border); border-radius: var(--r-card); padding: 14px; margin-bottom: 10px; background: var(--purple-light); }
+    .exp-entry-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+    .exp-entry-role { font-size: 15px; font-weight: 500; color: var(--dark); }
+    .exp-entry-meta { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    .exp-entry-skills { font-size: 12px; color: var(--purple); line-height: 1.5; }
+    .exp-entry-desc { font-size: 12px; color: var(--muted); margin-top: 5px; font-style: italic; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .remove-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 0; }
+
+    /* Job form */
+    .job-form { border: 1.5px solid var(--purple-mid); border-radius: var(--r-card); padding: 16px; margin-bottom: 10px; background: #faf9ff; }
+    .job-form-section { margin-bottom: 16px; }
+
+    /* Role search */
+    .role-search-wrap { position: relative; margin-bottom: 10px; }
+    .role-search-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 50; max-height: 180px; overflow-y: auto; display: none; }
+    .role-search-results.open { display: block; }
+    .role-result-item { padding: 10px 14px; font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
+    .role-result-item:last-child { border-bottom: none; }
+    .role-result-item:hover { background: var(--purple-light); }
+
+    /* Inference banner */
+    .infer-banner { background: var(--green-bg); border: 1px solid var(--green); border-radius: 10px; padding: 11px 13px; font-size: 13px; color: var(--green-dark); margin-bottom: 16px; line-height: 1.5; display: flex; gap: 10px; align-items: flex-start; }
+    .infer-icon { flex-shrink: 0; font-size: 15px; }
+
+    /* Club detail rows */
+    .club-detail-row { background: #faf9ff; border: 1px solid var(--purple-mid); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+    .club-detail-name { font-size: 14px; font-weight: 500; color: var(--dark); margin-bottom: 8px; }
+    .club-role-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .club-role-chips .chip { font-size: 12px; padding: 5px 10px; }
+
+    /* Activity description items */
+    .act-desc-item { margin-bottom: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+    .act-desc-item:first-child { border-top: none; padding-top: 0; }
+    .act-desc-label { font-size: 13px; font-weight: 500; color: var(--dark); margin-bottom: 6px; }
+
+    /* Other input */
+    .other-input-wrap { margin-top: 10px; display: flex; gap: 8px; }
+    .other-input-wrap input { flex: 1; font-size: 14px; }
+    .other-input-wrap button { padding: 10px 14px; font-size: 13px; width: auto; }
+
+    /* Section labels */
+    .section-title { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin: 20px 0 10px; }
+    .section-title:first-child { margin-top: 0; }
+
+    /* Expand toggle */
+    .expand-toggle { background: none; border: none; color: var(--purple); font-size: 13px; font-family: inherit; cursor: pointer; padding: 8px 0; display: flex; align-items: center; gap: 4px; }
+    .expand-panel { display: none; margin-top: 6px; }
+    .expand-panel.open { display: block; }
+
+    /* Prefs */
+    .pref-section { margin-bottom: 20px; }
+    .pref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .pref-card { padding: 12px 8px 10px; border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; background: var(--white); text-align: center; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 5px; font-family: inherit; width: 100%; }
+    .pref-card:hover { border-color: var(--purple-mid); background: var(--purple-light); }
+    .pref-card.selected { border-color: var(--purple); background: var(--purple-light); }
+    .pref-card.inferred { border-color: var(--green); background: var(--green-bg); }
+    .pref-card-icon { font-size: 22px; line-height: 1; }
+    .pref-card-label { font-size: 12px; font-weight: 500; color: var(--dark); line-height: 1.3; }
+    .pref-card.selected .pref-card-label { color: var(--purple); }
+    .pref-card.inferred .pref-card-label { color: var(--green-dark); }
+    .hours-grid { display: flex; gap: 8px; margin-top: 8px; }
+    .hours-card { flex: 1; padding: 14px 6px 12px; border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; background: var(--white); text-align: center; font-family: inherit; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .hours-card:hover { border-color: var(--purple-mid); background: var(--purple-light); }
+    .hours-card.selected { border-color: var(--purple); background: var(--purple-light); }
+    .hours-card-icon { font-size: 22px; }
+    .hours-card-label { font-size: 13px; font-weight: 500; color: var(--dark); }
+    .hours-card.selected .hours-card-label { color: var(--purple); }
+    .hours-card-sub { font-size: 11px; color: var(--muted); }
+
+    /* Swipe */
+    .swipe-area { flex: 1; display: flex; flex-direction: column; }
+    .card-zone { position: relative; height: 318px; margin: 10px 0 14px; flex-shrink: 0; }
+    .job-card { position: absolute; width: 100%; background: var(--white); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(91,63,248,0.1); transition: transform 0.35s ease, opacity 0.35s ease; }
+    .job-card.top { z-index: 3; }
+    .job-card.mid { z-index: 2; transform: scale(0.96) translateY(8px); }
+    .job-card.back { z-index: 1; transform: scale(0.92) translateY(16px); }
+    .job-card.gone-right { transform: translateX(140%) rotate(12deg); opacity: 0; z-index: 4; }
+    .job-card.gone-left { transform: translateX(-140%) rotate(-12deg); opacity: 0; z-index: 4; }
+    /* Card hero (colored band) */
+    .jc-hero { padding: 16px 16px 12px; text-align: center; }
+    .jc-emoji { font-size: 36px; margin-bottom: 5px; line-height: 1; }
+    .jc-role { font-size: 17px; font-weight: 500; color: rgba(255,255,255,0.95); margin-bottom: 2px; }
+    .jc-co { font-size: 12px; color: rgba(255,255,255,0.65); }
+    /* Card body */
+    .jc-body { padding: 12px 16px 14px; }
+    .jc-pay-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .jc-pay { font-size: 22px; font-weight: 500; color: var(--dark); }
+    .jc-hours { font-size: 12px; font-weight: 500; padding: 3px 10px; background: var(--purple-light); color: var(--purple); border-radius: 20px; }
+    .jc-loc { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+    .jc-perks { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+    .jc-perk { font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .jc-perk-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--green-bg); border: 1px solid var(--green); color: var(--green-dark); font-size: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; }
+    .jc-vibe { font-size: 12px; color: var(--muted); font-style: italic; line-height: 1.5; padding-top: 9px; border-top: 1px solid var(--border); }
+    /* Swipe action buttons */
+    .swipe-controls { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .swipe-action-btns { display: flex; gap: 10px; width: 100%; }
+    .swipe-action-btn { flex: 1; padding: 14px 10px; border-radius: var(--r-btn); font-size: 15px; font-weight: 500; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: all 0.15s; }
+    .swipe-action-btn.pass { background: transparent; border: 1.5px solid var(--border); color: var(--muted); }
+    .swipe-action-btn.pass:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
+    .swipe-action-btn.interested { background: var(--green-bg); border: 1.5px solid var(--green); color: var(--green-dark); }
+    .swipe-action-btn.interested:hover { background: var(--green); color: white; }
+    /* Progress dots */
+    .swipe-dots { display: flex; gap: 7px; align-items: center; }
+    .swipe-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--purple-light); transition: all 0.25s ease; flex-shrink: 0; }
+    .swipe-dot.active { background: var(--purple); width: 22px; border-radius: 4px; }
+    .swipe-dot.done { background: var(--purple-mid); }
+    .swipe-done { display: none; flex-direction: column; align-items: center; justify-content: center; height: 318px; text-align: center; }
+    .swipe-done-emoji { font-size: 48px; margin-bottom: 14px; }
+    .swipe-done h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+    .swipe-done p { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 24px; }
+
+    /* Profile */
+    .browser-chrome { background: #EEECF8; border-radius: 14px 14px 0 0; padding: 10px 12px 8px; border: 1px solid var(--border); border-bottom: none; }
+    .browser-url { display: flex; align-items: center; gap: 6px; background: white; border-radius: 8px; padding: 7px 10px; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+    .browser-url-text { flex: 1; }
+    .browser-url-text .hi { color: var(--purple); font-weight: 500; }
+    .updated-pill { font-size: 11px; padding: 2px 8px; background: var(--green-bg); color: var(--green-dark); border-radius: 10px; font-weight: 500; opacity: 0; transition: opacity 0.3s; }
+    .updated-pill.show { opacity: 1; }
+    .browser-actions { display: flex; gap: 6px; }
+    .browser-action-btn { flex: 1; padding: 7px 4px; border: 1px solid var(--border); border-radius: 8px; background: white; font-size: 11px; color: var(--dark); cursor: pointer; font-family: inherit; font-weight: 500; text-align: center; transition: all 0.15s; white-space: nowrap; }
+    .browser-action-btn:hover { background: var(--purple-light); border-color: var(--purple); color: var(--purple); }
+    .profile-content { border: 1px solid var(--border); border-top: none; border-radius: 0 0 14px 14px; overflow-y: auto; max-height: 400px; background: white; }
+    .profile-hero { background: var(--dark); padding: 22px 18px; color: white; }
+    .profile-name { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+    .profile-headline { font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 12px; line-height: 1.5; }
+    .verified-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 10px; font-size: 12px; color: rgba(255,255,255,0.8); }
+    .profile-sec { padding: 14px 18px; border-bottom: 1px solid var(--border); }
+    .profile-sec:last-child { border-bottom: none; }
+    .profile-sec-title { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 10px; }
+    .profile-bio { font-size: 14px; line-height: 1.65; color: var(--text); }
+    .profile-exp-item { margin-bottom: 14px; }
+    .profile-exp-item:last-child { margin-bottom: 0; }
+    .profile-exp-role { font-size: 14px; font-weight: 500; color: var(--dark); }
+    .profile-exp-org { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+    .profile-exp-desc { font-size: 13px; color: var(--text); line-height: 1.55; margin-bottom: 4px; }
+    .profile-exp-skills { font-size: 12px; color: var(--purple); }
+    .profile-skills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+    .profile-skill { font-size: 12px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 20px; color: var(--text); }
+    .profile-prefs { font-size: 13px; color: var(--text); line-height: 1.8; }
+
+    /* Chatbot */
+    .chatbot-drawer { background: white; border-top: 1px solid var(--border); border-radius: 16px 16px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); flex-shrink: 0; }
+    .chatbot-handle { padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+    .chatbot-handle-left { display: flex; align-items: center; gap: 8px; }
+    .chatbot-handle-title { font-size: 14px; font-weight: 500; color: var(--dark); }
+    .ai-badge { font-size: 11px; padding: 2px 8px; background: var(--purple-light); color: var(--purple); border-radius: 10px; font-weight: 500; }
+    .chatbot-chevron { color: var(--muted); font-size: 15px; transition: transform 0.2s; }
+    .chatbot-drawer.open .chatbot-chevron { transform: rotate(180deg); }
+    .chatbot-body { display: none; padding: 0 18px 18px; }
+    .chatbot-drawer.open .chatbot-body { display: block; }
+    .chatbot-suggs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .chatbot-chip { padding: 6px 12px; border: 1px solid var(--purple-mid); border-radius: 20px; font-size: 12px; color: var(--purple); cursor: pointer; background: white; font-family: inherit; transition: all 0.15s; }
+    .chatbot-chip:hover { background: var(--purple-light); }
+    .chatbot-chip:disabled { opacity: 0.4; cursor: not-allowed; }
+    .chat-msgs { max-height: 160px; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .chat-msg { padding: 9px 12px; border-radius: 12px; font-size: 13px; line-height: 1.5; max-width: 92%; }
+    .chat-msg.ai { background: var(--purple-light); color: var(--dark); border-bottom-left-radius: 4px; align-self: flex-start; }
+    .chat-msg.user { background: var(--purple); color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
+    .chat-input-row { display: flex; gap: 8px; align-items: center; }
+    .chat-input { flex: 1; padding: 9px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+    .chat-input:focus { border-color: var(--purple); }
+    .chat-send { width: 36px; height: 36px; background: var(--purple); border: none; border-radius: 50%; color: white; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    /* Welcome */
+    .welcome-hero { text-align: center; padding: 28px 0 32px; }
+    .welcome-emoji { font-size: 56px; margin-bottom: 16px; }
+    .upload-area { border: 1.5px dashed var(--purple-mid); border-radius: var(--r-card); background: var(--purple-light); padding: 16px; text-align: center; cursor: pointer; transition: all 0.15s; margin-bottom: 10px; }
+    .upload-area:hover { background: var(--purple-mid); }
+    .upload-area-icon { font-size: 24px; margin-bottom: 5px; }
+    .upload-area-text { font-size: 15px; font-weight: 500; color: var(--purple); margin-bottom: 2px; }
+    .upload-area-sub { font-size: 12px; color: var(--muted); }
+    .divider { text-align: center; color: var(--muted); font-size: 13px; margin: 14px 0; position: relative; }
+    .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: calc(50% - 22px); height: 1px; background: var(--border); }
+    .divider::before { left: 0; } .divider::after { right: 0; }
+
+    /* Job listings */
+    .jobs-section-hdr { margin: 20px 0 4px; }
+    .jobs-section-title { font-size: 15px; font-weight: 500; color: var(--dark); margin-bottom: 2px; }
+    .jobs-section-sub { font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.4; }
+    .job-listing { border: 1px solid var(--border); border-radius: 12px; padding: 12px 13px; margin-bottom: 9px; display: flex; align-items: center; gap: 12px; transition: box-shadow 0.15s; }
+    .job-listing:hover { box-shadow: 0 2px 12px rgba(91,63,248,0.1); }
+    .jl-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .jl-info { flex: 1; min-width: 0; }
+    .jl-role { font-size: 14px; font-weight: 500; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .jl-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .jl-pay { font-size: 12px; font-weight: 500; color: var(--purple); margin-top: 2px; }
+    .jl-apply { flex-shrink: 0; padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; font-family: inherit; cursor: pointer; white-space: nowrap; transition: all 0.15s; border: none; }
+    .jl-apply.direct { background: var(--green-bg); color: var(--green-dark); border: 1px solid var(--green); }
+    .jl-apply.direct:hover { background: var(--green); color: white; }
+    .jl-apply.partner { background: transparent; color: var(--purple); border: 1px solid var(--purple-mid); }
+    .jl-apply.partner:hover { background: var(--purple-light); }
+    .jobs-divider { height: 1px; background: var(--border); margin: 20px 0; }
+    .help-banner { background: var(--dark); border-radius: 16px; padding: 18px 18px 20px; margin: 20px 0; color: white; }
+    .help-banner-icon { font-size: 28px; margin-bottom: 10px; }
+    .help-banner-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; color: white; }
+    .help-banner-text { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.55; margin-bottom: 14px; }
+    .help-banner-btn { display: inline-block; padding: 10px 18px; background: var(--purple); color: white; border: none; border-radius: 20px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+    .help-banner-btn:hover { opacity: 0.85; }
+    .jobs-find-btn { display: block; margin: 14px 0 0; width: 100%; padding: 14px; background: var(--purple); color: white; border: none; border-radius: var(--r-btn); font-size: 15px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.2s; text-align: center; }
+    .jobs-find-btn:hover { opacity: 0.9; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--dark); color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; z-index: 100; transition: transform 0.3s ease; max-width: 320px; text-align: center; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @keyframes flash { 0% { background: var(--green-bg); } 100% { background: transparent; } }
+    .flash { animation: flash 1.2s ease-out; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <!-- ═══════════ WELCOME ═══════════ -->
+  <div class="screen active" id="screen-welcome">
+    <div class="welcome-hero">
+      <div class="welcome-emoji">🚀</div>
+      <h1>Your career<br>starts here</h1>
+      <p class="subtitle" style="margin-bottom:0">Build a shareable profile in 3 minutes —<br>no work experience required</p>
+    </div>
+    <div class="upload-area" onclick="handleUpload()">
+      <div class="upload-area-icon">📄</div>
+      <div class="upload-area-text">Already have a resume? Upload it</div>
+      <div class="upload-area-sub">We'll pre-fill everything for you</div>
+    </div>
+    <div class="divider">or start from scratch</div>
+    <button class="btn-primary" onclick="goTo('info')">Build my profile →</button>
+    <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:18px">Free · 3 minutes · Used by 2M+ jobseekers</p>
+  </div>
+
+  <!-- ═══════════ INFO ═══════════ -->
+  <div class="screen" id="screen-info">
+    <button class="back-btn" onclick="goTo('welcome')">← Back</button>
+    <div class="screen-label">Step 1 of 6 · The basics</div>
+    <h1>Nice to meet you</h1>
+    <p class="subtitle">Just a few quick details to get started</p>
+
+    <div class="field">
+      <div class="name-row">
+        <div class="field">
+          <label class="field-label">First name</label>
+          <!-- autocomplete attributes enable native keyboard suggestions -->
+          <input type="text" id="input-first" placeholder="Jordan" autocomplete="given-name" oninput="checkInfoNext()" />
+        </div>
+        <div class="field">
+          <label class="field-label">Last name</label>
+          <input type="text" id="input-last" placeholder="Rivera" autocomplete="family-name" oninput="checkInfoNext()" />
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">City or area</label>
+      <div class="autocomplete-wrap">
+        <input type="text" id="input-location" placeholder="Detecting your location…" autocomplete="off" oninput="filterCities(this.value)" onblur="hideCitiesDelayed()" />
+        <div id="location-detected-hint" style="display:none;font-size:12px;color:var(--muted);margin-top:5px">📍 Pre-filled from your location — change if needed</div>
+        <div class="autocomplete-dropdown" id="city-dropdown"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">What kind of work are you looking for? <span style="font-weight:400;text-transform:none">(pick any)</span></label>
+      <div class="chip-group" id="chips-work-type">
+        <button class="chip" onclick="toggleChip(this)">Food service</button>
+        <button class="chip" onclick="toggleChip(this)">Retail</button>
+        <button class="chip" onclick="toggleChip(this)">Office / admin</button>
+        <button class="chip" onclick="toggleChip(this)">Childcare / education</button>
+        <button class="chip" onclick="toggleChip(this)">Healthcare</button>
+        <button class="chip" onclick="toggleChip(this)">Warehouse / delivery</button>
+        <button class="chip" onclick="toggleChip(this)">Fitness / outdoors</button>
+        <button class="chip" onclick="toggleChip(this)">Customer service</button>
+        <button class="chip" onclick="toggleChip(this)">Not sure yet</button>
+        <button class="chip" onclick="toggleWorkTypeOther(this)">Other</button>
+      </div>
+      <div id="work-type-other-wrap" class="other-input-wrap" style="display:none">
+        <input type="text" id="work-type-other-input" placeholder="What kind of work?" />
+        <button class="btn-primary" onclick="addWorkTypeOther()" style="width:auto;padding:10px 16px;font-size:14px">Add</button>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" id="btn-info-next" onclick="submitInfo()" disabled>Continue →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ EXP TYPE ═══════════ -->
+  <div class="screen" id="screen-exp-type">
+    <button class="back-btn" onclick="goTo('info')">← Back</button>
+    <div class="screen-label">Step 2 of 6 · Your background</div>
+    <h1>Have you worked before?</h1>
+    <p class="subtitle">Be honest — we're here to show your best self either way</p>
+
+    <div class="option-card" id="opt-yes" onclick="selectExpType('yes')">
+      <div class="option-card-icon">💼</div>
+      <div><div class="option-card-title">Yes, I've had jobs</div><div class="option-card-desc">Part-time, full-time, summer jobs, gig work — all counts</div></div>
+    </div>
+    <div class="option-card" id="opt-some" onclick="selectExpType('some')">
+      <div class="option-card-icon">🌱</div>
+      <div><div class="option-card-title">Some informal work</div><div class="option-card-desc">Babysitting, lawn care, helping with a family business, selling things online</div></div>
+    </div>
+    <div class="option-card" id="opt-none" onclick="selectExpType('none')">
+      <div class="option-card-icon">⭐</div>
+      <div><div class="option-card-title">Just starting out</div><div class="option-card-desc">No work experience yet — that's totally fine, you've got more than you think</div></div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" id="btn-exptype-next" onclick="submitExpType()" disabled>Continue →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ WORK EXP ═══════════ -->
+  <div class="screen" id="screen-work-exp">
+    <button class="back-btn" onclick="goTo('exp-type')">← Back</button>
+    <div class="screen-label">Step 2 of 6 · Work history</div>
+    <h1>Tell us about your work</h1>
+    <p class="subtitle">Any job counts — tap to add each one</p>
+
+    <div id="exp-entries"></div>
+    <div id="job-form-container"></div>
+    <button class="add-btn" id="btn-add-job" onclick="showJobForm()">+ Add a job</button>
+
+    <div class="btn-group">
+      <button class="btn-primary" id="btn-workexp-next" onclick="goTo('activities')" disabled>Continue →</button>
+      <button class="btn-ghost" id="btn-skip-activities" onclick="goTo('activities')">Skip — I'll add activities instead</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ ACTIVITIES ═══════════ -->
+  <div class="screen" id="screen-activities">
+    <button class="back-btn" id="btn-act-back" onclick="goActBack()">← Back</button>
+    <div class="screen-label" id="act-label">Step 3 of 6 · Activities</div>
+    <h1 id="act-title">Everything else you've done</h1>
+    <p class="subtitle" id="act-subtitle">School clubs, sports, volunteering, informal work — it all counts and it all belongs on your profile</p>
+
+    <!-- School & Education -->
+    <div class="act-card" id="act-school">
+      <div class="act-card-hdr" onclick="toggleActCard('school')">
+        <div class="act-card-left">
+          <div class="act-card-icon">🎓</div>
+          <div>
+            <div class="act-card-title">School & education <span class="act-count" id="count-school" style="display:none">0</span></div>
+            <div class="act-card-sub">Clubs, student council, projects, roles</div>
+          </div>
+        </div>
+        <div class="act-card-chevron">›</div>
+      </div>
+      <div class="act-card-body">
+        <div class="field" style="margin-bottom:14px">
+          <label class="field-label">School name (optional)</label>
+          <input type="text" id="act-school-name" placeholder="e.g. Lincoln High School" oninput="refreshSchoolCount()" />
+        </div>
+        <label class="field-label">What were you involved in?</label>
+        <div class="chip-group" id="chips-clubs">
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Student Council</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Honor Society / NHS</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Drama / Theater</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Debate Club</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Yearbook</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">School Newspaper</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Art Club</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Band / Orchestra</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Choir</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">JROTC</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Math Team</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Science Club</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Key Club</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Language Club</button>
+          <button class="chip" onclick="toggleActivityChip(this,'clubs')">Other</button>
+        </div>
+        <div id="other-clubs-wrap" class="other-input-wrap" style="display:none">
+          <input type="text" id="other-clubs-input" placeholder="Which club or activity?" />
+          <button class="btn-primary" onclick="addOtherChip('clubs')">Add</button>
+        </div>
+        <!-- Per-club detail section (roles + description) — rendered dynamically -->
+        <div id="club-details-section"></div>
+      </div>
+    </div>
+
+    <!-- Volunteering -->
+    <div class="act-card" id="act-vol">
+      <div class="act-card-hdr" onclick="toggleActCard('vol')">
+        <div class="act-card-left">
+          <div class="act-card-icon">🤝</div>
+          <div>
+            <div class="act-card-title">Volunteering & community <span class="act-count" id="count-vol" style="display:none">0</span></div>
+            <div class="act-card-sub">Even one-off or informal counts</div>
+          </div>
+        </div>
+        <div class="act-card-chevron">›</div>
+      </div>
+      <div class="act-card-body">
+        <label class="field-label">Where have you volunteered?</label>
+        <div class="chip-group" id="chips-vol">
+          <button class="chip" onclick="toggleActivityChip(this,'vol')">Food bank</button>
+          <button class="chip" onclick="toggleActivityChip(this,'vol')">Animal shelter</button>
+          <button class="chip" onclick="toggleActivityChip(this,'vol')">Hospital / clinic</button>
+          <button class="chip" onclick="toggleActivityChip(this,'vol')">Library</button>
+          <button class="chip" onclick="toggleActivityChip(this,'vol')">Religious org</button>
+          <button class="chip" onclick="toggleActivityChip(this,'vol')">Community cleanup</button>
+          <button class="chip" onclick="toggleActivityChip(this,'vol')">Youth mentoring</button>
+          <button class="chip" onclick="toggleActivityChip(this,'vol')">Tutoring</button>
+          <button class="chip" onclick="toggleActivityChip(this,'vol')">Habitat for Humanity</button>
+          <button class="chip" onclick="toggleActivityChip(this,'vol')">Other</button>
+        </div>
+        <div id="other-vol-wrap" class="other-input-wrap" style="display:none">
+          <input type="text" id="other-vol-input" placeholder="Where else did you volunteer?" />
+          <button class="btn-primary" onclick="addOtherChip('vol')">Add</button>
+        </div>
+        <!-- Per-org descriptions rendered dynamically -->
+        <div id="vol-desc-section"></div>
+      </div>
+    </div>
+
+    <!-- Sports -->
+    <div class="act-card" id="act-sports">
+      <div class="act-card-hdr" onclick="toggleActCard('sports')">
+        <div class="act-card-left">
+          <div class="act-card-icon">⚽</div>
+          <div>
+            <div class="act-card-title">Sports & physical activities <span class="act-count" id="count-sports" style="display:none">0</span></div>
+            <div class="act-card-sub">School teams, recreational leagues, individual sports</div>
+          </div>
+        </div>
+        <div class="act-card-chevron">›</div>
+      </div>
+      <div class="act-card-body">
+        <label class="field-label">What sports or activities?</label>
+        <div class="chip-group" id="chips-sports">
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Basketball</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Soccer</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Football</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Baseball / Softball</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Swimming</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Track & Field</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Cross Country</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Tennis</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Golf</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Wrestling</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Volleyball</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Dance</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Gymnastics</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Martial Arts</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Cheerleading</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Hockey</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Lacrosse</button>
+          <button class="chip" onclick="toggleActivityChip(this,'sports')">Other</button>
+        </div>
+        <div id="other-sports-wrap" class="other-input-wrap" style="display:none">
+          <input type="text" id="other-sports-input" placeholder="Which sport or activity?" />
+          <button class="btn-primary" onclick="addOtherChip('sports')">Add</button>
+        </div>
+        <!-- Per-sport descriptions rendered dynamically -->
+        <div id="sports-desc-section"></div>
+      </div>
+    </div>
+
+    <!-- Informal work -->
+    <div class="act-card" id="act-informal">
+      <div class="act-card-hdr" onclick="toggleActCard('informal')">
+        <div class="act-card-left">
+          <div class="act-card-icon">💡</div>
+          <div>
+            <div class="act-card-title">Informal & side work <span class="act-count" id="count-informal" style="display:none">0</span></div>
+            <div class="act-card-sub">Babysitting, lawn care, gigs, family business</div>
+          </div>
+        </div>
+        <div class="act-card-chevron">›</div>
+      </div>
+      <div class="act-card-body">
+        <label class="field-label">What have you done?</label>
+        <div class="chip-group" id="chips-informal">
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">Babysitting / Nannying</button>
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">Dog walking / Pet sitting</button>
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">Lawn care / Landscaping</button>
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">Snow removal</button>
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">Car washing / detailing</button>
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">Tutoring</button>
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">Family business</button>
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">Selling handmade items</button>
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">Errand running</button>
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">House cleaning</button>
+          <button class="chip" onclick="toggleActivityChip(this,'informal')">Other</button>
+        </div>
+        <div id="other-informal-wrap" class="other-input-wrap" style="display:none">
+          <input type="text" id="other-informal-input" placeholder="What else did you do?" />
+          <button class="btn-primary" onclick="addOtherChip('informal')">Add</button>
+        </div>
+        <!-- Per-item descriptions rendered dynamically -->
+        <div id="informal-desc-section"></div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" onclick="submitActivities()">Continue →</button>
+      <button class="btn-ghost" onclick="submitActivities()">Skip this for now</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ SKILLS ═══════════ -->
+  <div class="screen" id="screen-skills">
+    <button class="back-btn" onclick="goTo('activities')">← Back</button>
+    <div class="screen-label">Step 4 of 6 · Skills</div>
+    <h1>Here's what your background says about you</h1>
+    <p class="subtitle">We pulled these from what you told us — tap to remove, or add your own</p>
+
+    <div id="infer-banner" class="infer-banner" style="display:none">
+      <span class="infer-icon">✦</span><span id="infer-banner-text"></span>
+    </div>
+    <div id="skills-inferred-section" style="display:none">
+      <div class="section-title">From your background</div>
+      <div class="chip-group" id="chips-inferred"></div>
+    </div>
+    <div id="skills-suggested-section" style="display:none">
+      <div class="section-title">Other skills you might have</div>
+      <div class="chip-group" id="chips-suggested"></div>
+    </div>
+    <button class="expand-toggle" onclick="toggleExpand('panel-add-skill','expand-icon')">
+      <span id="expand-icon">＋</span> Add a skill not listed
+    </button>
+    <div class="expand-panel" id="panel-add-skill">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="input-custom-skill" placeholder="e.g. Google Sheets, First Aid…" style="flex:1" />
+        <button class="btn-primary" style="width:auto;padding:12px 18px;font-size:14px" onclick="addCustomSkill()">Add</button>
+      </div>
+    </div>
+    <div id="skills-custom-section" style="display:none;margin-top:16px">
+      <div class="section-title">Added by you</div>
+      <div class="chip-group" id="chips-custom"></div>
+    </div>
+    <div class="btn-group">
+      <button class="btn-primary" onclick="submitSkills()">Looks good →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ PREFERENCES ═══════════ -->
+  <div class="screen" id="screen-prefs">
+    <button class="back-btn" onclick="goTo('skills')">← Back</button>
+    <div class="screen-label">Step 5 of 6 · Work preferences</div>
+    <h1>What kind of work suits you?</h1>
+    <p class="subtitle">We've made some guesses — change anything</p>
+
+    <div id="pref-infer-banner" class="infer-banner" style="display:none">
+      <span class="infer-icon">✦</span><span id="pref-infer-text"></span>
+    </div>
+
+    <!-- What matters — 2-column icon grid -->
+    <div class="pref-section">
+      <div class="section-title">What matters to you?</div>
+      <div class="pref-grid" id="chips-values">
+        <button class="pref-card" onclick="this.classList.toggle('selected')">
+          <span class="pref-card-icon">👥</span><span class="pref-card-label">Team environment</span>
+        </button>
+        <button class="pref-card" onclick="this.classList.toggle('selected')">
+          <span class="pref-card-icon">🧘</span><span class="pref-card-label">Working independently</span>
+        </button>
+        <button class="pref-card" onclick="this.classList.toggle('selected')">
+          <span class="pref-card-icon">💬</span><span class="pref-card-label">Customer interaction</span>
+        </button>
+        <button class="pref-card" onclick="this.classList.toggle('selected')">
+          <span class="pref-card-icon">⚡</span><span class="pref-card-label">Fast-paced</span>
+        </button>
+        <button class="pref-card" onclick="this.classList.toggle('selected')">
+          <span class="pref-card-icon">🎨</span><span class="pref-card-label">Creative work</span>
+        </button>
+        <button class="pref-card" onclick="this.classList.toggle('selected')">
+          <span class="pref-card-icon">🏃</span><span class="pref-card-label">Physical activity</span>
+        </button>
+        <button class="pref-card" onclick="this.classList.toggle('selected')">
+          <span class="pref-card-icon">🤝</span><span class="pref-card-label">Helping others</span>
+        </button>
+        <button class="pref-card" onclick="this.classList.toggle('selected')">
+          <span class="pref-card-icon">⭐</span><span class="pref-card-label">Leadership opportunities</span>
+        </button>
+        <button class="pref-card" onclick="this.classList.toggle('selected')">
+          <span class="pref-card-icon">📚</span><span class="pref-card-label">Learning on the job</span>
+        </button>
+        <button class="pref-card" onclick="this.classList.toggle('selected')">
+          <span class="pref-card-icon">🏠</span><span class="pref-card-label">Close to home</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Hours — 3 visual cards -->
+    <div class="pref-section">
+      <div class="section-title">Hours</div>
+      <div class="hours-grid">
+        <button class="hours-card" onclick="selectHoursCard(this)">
+          <span class="hours-card-icon">💼</span>
+          <span class="hours-card-label">Full-time</span>
+          <span class="hours-card-sub">35+ hrs/week</span>
+        </button>
+        <button class="hours-card" onclick="selectHoursCard(this)">
+          <span class="hours-card-icon">🕐</span>
+          <span class="hours-card-label">Part-time</span>
+          <span class="hours-card-sub">Under 35 hrs</span>
+        </button>
+        <button class="hours-card" onclick="selectHoursCard(this)">
+          <span class="hours-card-icon">🔄</span>
+          <span class="hours-card-label">Either</span>
+          <span class="hours-card-sub">Open to both</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Schedule — emoji chips -->
+    <div class="pref-section">
+      <div class="section-title">Schedule</div>
+      <div class="chip-group" id="chips-schedule">
+        <button class="chip" data-value="Mornings" onclick="toggleChip(this)">🌅 Mornings</button>
+        <button class="chip" data-value="Afternoons" onclick="toggleChip(this)">☀️ Afternoons</button>
+        <button class="chip" data-value="Evenings" onclick="toggleChip(this)">🌆 Evenings</button>
+        <button class="chip" data-value="Weekends" onclick="toggleChip(this)">📅 Weekends</button>
+        <button class="chip" data-value="Overnight" onclick="toggleChip(this)">🌙 Overnight</button>
+        <button class="chip" data-value="Flexible" onclick="toggleChip(this)">🔄 Flexible</button>
+      </div>
+    </div>
+
+    <!-- Getting there — commute + distance merged -->
+    <div class="pref-section">
+      <div class="section-title">Getting there</div>
+      <div class="chip-group" id="chips-commute" style="margin-bottom:10px">
+        <button class="chip" data-value="Car" onclick="toggleChip(this)">🚗 Car</button>
+        <button class="chip" data-value="Transit" onclick="toggleChip(this)">🚌 Transit</button>
+        <button class="chip" data-value="Bike" onclick="toggleChip(this)">🚲 Bike</button>
+        <button class="chip" data-value="Walking" onclick="toggleChip(this)">🚶 Walking</button>
+        <button class="chip" data-value="Rides" onclick="toggleChip(this)">📱 Rides</button>
+      </div>
+      <div class="chip-group" id="chips-distance">
+        <button class="chip single-select" data-value="15 min" onclick="selectSingle(this,'chips-distance')">📍 15 min</button>
+        <button class="chip single-select" data-value="30 min" onclick="selectSingle(this,'chips-distance')">📍 30 min</button>
+        <button class="chip single-select" data-value="45 min" onclick="selectSingle(this,'chips-distance')">📍 45 min</button>
+        <button class="chip single-select" data-value="1 hour" onclick="selectSingle(this,'chips-distance')">📍 1 hour</button>
+        <button class="chip single-select" data-value="Flexible" onclick="selectSingle(this,'chips-distance')">🔄 Flexible</button>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" onclick="submitPrefs()">Almost there →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ SWIPE ═══════════ -->
+  <div class="screen" id="screen-swipe">
+    <div class="screen-label">Step 6 of 6 · Jobs for you</div>
+    <h1>A few roles to react to</h1>
+    <p class="subtitle">Your picks help shape your profile and job matches</p>
+
+    <div class="swipe-area">
+      <!-- Card zone: done state lives in same space as cards -->
+      <div class="card-zone" id="card-zone">
+        <div id="card-stack"></div>
+        <div class="swipe-done" id="swipe-done">
+          <div class="swipe-done-emoji">🎉</div>
+          <h2>You're all set!</h2>
+          <p>Your profile is ready.<br>Here's what we built for you.</p>
+          <button class="btn-primary" style="width:auto;padding:14px 32px" onclick="goToProfile()">See my profile →</button>
+        </div>
+      </div>
+      <div class="swipe-controls" id="swipe-controls">
+        <div class="swipe-action-btns">
+          <button class="swipe-action-btn pass" onclick="swipeJob(false)">👋 Pass</button>
+          <button class="swipe-action-btn interested" onclick="swipeJob(true)">❤️ Interested</button>
+        </div>
+        <div class="swipe-dots" id="swipe-dots"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PROFILE ═══════════ -->
+  <div class="screen" id="screen-profile" style="padding:16px 16px 0">
+    <div class="screen-label" style="margin-bottom:6px">Your career profile</div>
+    <h1 style="font-size:22px;margin-bottom:4px">Here's your living profile 🎉</h1>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Share the link, download your resume, or keep refining with AI</p>
+    <div class="browser-chrome">
+      <div class="browser-url">
+        <span>🔒</span>
+        <span class="browser-url-text">snagajob.com/<span class="hi" id="profile-url-slug">jordan-r</span></span>
+        <span class="updated-pill" id="updated-pill">✓ Updated</span>
+      </div>
+      <div class="browser-actions">
+        <button class="browser-action-btn" onclick="copyLink()">🔗 Copy link</button>
+        <button class="browser-action-btn" onclick="downloadPDF()">📄 PDF</button>
+        <button class="browser-action-btn" onclick="downloadMd()">⬇ .md</button>
+      </div>
+    </div>
+    <div class="profile-content" id="profile-content"></div>
+    <button class="jobs-find-btn" onclick="buildJobsScreen();goTo('jobs')">
+      See jobs matched to your profile →
+    </button>
+    <div class="chatbot-drawer" id="chatbot-drawer">
+      <div class="chatbot-handle" onclick="toggleChatbot()">
+        <div class="chatbot-handle-left">
+          <span>✨</span><span class="chatbot-handle-title">Customise with AI</span><span class="ai-badge">AI</span>
+        </div>
+        <span class="chatbot-chevron">›</span>
+      </div>
+      <div class="chatbot-body">
+        <div class="chatbot-suggs" id="chatbot-chips">
+          <button class="chatbot-chip" onclick="chatSuggest(this)">Make my bio stronger</button>
+          <button class="chatbot-chip" onclick="chatSuggest(this)">More professional tone</button>
+          <button class="chatbot-chip" onclick="chatSuggest(this)">Frame volunteering as work</button>
+          <button class="chatbot-chip" onclick="chatSuggest(this)">Add leadership skills</button>
+          <button class="chatbot-chip" onclick="chatSuggest(this)">Tailor for food service</button>
+          <button class="chatbot-chip" onclick="chatSuggest(this)">Translate to Spanish</button>
+        </div>
+        <div class="chat-msgs" id="chat-msgs"></div>
+        <div class="chat-input-row">
+          <input type="text" class="chat-input" id="chat-input" placeholder="Ask anything about your profile…" onkeydown="if(event.key==='Enter')sendChat()" />
+          <button class="chat-send" onclick="sendChat()">↑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ JOBS ═══════════ -->
+  <div class="screen" id="screen-jobs">
+    <button class="back-btn" onclick="goTo('profile')">← Back to my profile</button>
+    <div class="screen-label">Jobs for you</div>
+    <h1 style="font-size:22px;margin-bottom:4px">Here's what's hiring</h1>
+    <p class="subtitle" style="margin-bottom:0">Matched to your profile and location</p>
+
+    <!-- Snagajob direct jobs -->
+    <div class="jobs-section-hdr">
+      <div style="display:flex;align-items:center;gap:8px;margin-top:20px;margin-bottom:4px">
+        <div style="font-size:15px;font-weight:500;color:var(--dark)">On Snagajob</div>
+        <div style="font-size:11px;font-weight:500;padding:2px 8px;background:var(--green-bg);color:var(--green-dark);border-radius:10px">1-tap apply</div>
+      </div>
+      <div class="jobs-section-sub">Your profile is already attached — just tap Apply</div>
+    </div>
+    <div id="snagajob-jobs-list"></div>
+
+    <div class="jobs-divider"></div>
+
+    <!-- Partner jobs -->
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <div style="font-size:15px;font-weight:500;color:var(--dark)">Partner jobs</div>
+        <div style="font-size:11px;font-weight:500;padding:2px 8px;background:var(--purple-light);color:var(--purple);border-radius:10px">Apply on their site</div>
+      </div>
+      <div class="jobs-section-sub">Download your resume before you apply — it's ready to go</div>
+    </div>
+    <div id="partner-jobs-list"></div>
+
+    <!-- Come back banner -->
+    <div class="help-banner">
+      <div class="help-banner-icon">💬</div>
+      <div class="help-banner-title">Filling out applications somewhere else?</div>
+      <div class="help-banner-text">Come back anytime — we'll help you tailor your answers to the job, write a quick cover note, and keep track of what you've applied to.</div>
+      <button class="help-banner-btn" onclick="showToast('Application help coming soon — we\'ll be here when you need it!')">Get application help →</button>
+    </div>
+
+    <div style="height:16px"></div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+const S = {
+  firstName:'', lastName:'', location:'', workTypes:[],
+  expType: null,
+  workExps: [],  // {role, company, duration, skills[], description}
+  acts: {
+    schoolName: '',
+    clubs: [],      // {name, role, description}
+    vol: [],        // {name, description}
+    sports: [],     // {name, description}
+    informal: [],   // {name, description}
+  },
+  inferredSkills: [], selectedSkills: [], customSkills: [],
+  prefs: { values:[], hours:'', schedule:[], commute:[], distance:'' },
+  inferredPrefs: [],
+  swipeIndex: 0, swipeLiked: [],
+};
+
+// ══════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════
+const CITIES = [
+  'Atlanta, GA','Austin, TX','Baltimore, MD','Boston, MA','Charlotte, NC',
+  'Chicago, IL','Cleveland, OH','Columbus, OH','Dallas, TX','Denver, CO',
+  'Detroit, MI','El Paso, TX','Fort Worth, TX','Houston, TX','Indianapolis, IN',
+  'Jacksonville, FL','Kansas City, MO','Las Vegas, NV','Los Angeles, CA','Louisville, KY',
+  'Memphis, TN','Miami, FL','Milwaukee, WI','Minneapolis, MN','Nashville, TN',
+  'New York, NY','Oklahoma City, OK','Orlando, FL','Philadelphia, PA','Phoenix, AZ',
+  'Pittsburgh, PA','Portland, OR','Raleigh, NC','Sacramento, CA','San Antonio, TX',
+  'San Diego, CA','San Francisco, CA','San Jose, CA','Seattle, WA','Tampa, FL',
+  'Washington, DC','Calgary, AB','Edmonton, AB','Montreal, QC','Ottawa, ON',
+  'Toronto, ON','Vancouver, BC','Winnipeg, MB',
+];
+
+const ALL_ROLES = [
+  'Cashier','Server','Barista','Retail Sales Associate','Sales Associate','Host / Hostess',
+  'Food Prep','Line Cook','Stocker','Dishwasher','Delivery Driver','Warehouse Associate',
+  'Office Assistant','Receptionist','Babysitter','Nanny','Lawn Care','Tutor',
+  'Camp Counselor','Lifeguard','Dog Walker','Team Member','Crew Member',
+  'Customer Service Rep','Grocery Clerk','Pharmacy Tech','Bank Teller',
+  'Administrative Assistant','Data Entry Clerk','Childcare Worker','Other',
+];
+
+const ROLE_SKILLS = {
+  'cashier': ['Cash handling','Customer service','Point of sale (POS)','Attention to detail','Conflict resolution','Inventory counting'],
+  'server': ['Customer service','Food safety','Multitasking','Order taking','Teamwork','Upselling','Payment processing'],
+  'barista': ['Coffee preparation','Customer service','Cash handling','Inventory management','Multitasking','Quality control'],
+  'retail sales associate': ['Customer service','Sales','Inventory management','Visual merchandising','Returns processing','Product knowledge'],
+  'sales associate': ['Customer service','Sales','Product knowledge','Cash handling','Communication','Visual merchandising'],
+  'host / hostess': ['Customer service','Reservation management','Communication','Multitasking','Conflict resolution','Teamwork'],
+  'food prep': ['Food safety','Knife skills','Recipe following','Kitchen sanitation','Teamwork','Time management'],
+  'line cook': ['Food safety','Knife skills','Mise en place','Kitchen sanitation','Teamwork','Speed under pressure'],
+  'stocker': ['Inventory management','Physical stamina','Attention to detail','Organization','Teamwork'],
+  'dishwasher': ['Kitchen sanitation','Physical stamina','Teamwork','Time management','Speed and efficiency'],
+  'delivery driver': ['Navigation','Time management','Customer service','Vehicle operation','Route planning','Reliability'],
+  'warehouse associate': ['Inventory management','Physical stamina','Safety compliance','Teamwork','Order fulfillment'],
+  'office assistant': ['Data entry','Filing','Microsoft Office','Phone etiquette','Scheduling','Communication'],
+  'receptionist': ['Phone etiquette','Scheduling','Customer service','Data entry','Microsoft Office','Communication'],
+  'babysitter': ['Childcare','First aid / CPR','Meal preparation','Homework help','Communication','Reliability'],
+  'nanny': ['Childcare','First aid / CPR','Meal preparation','Homework help','Communication','Reliability'],
+  'lawn care': ['Lawn mowing','Weed control','Physical stamina','Reliability','Equipment operation','Time management'],
+  'tutor': ['Teaching','Patience','Communication','Curriculum planning','Mentoring','Adaptability'],
+  'camp counselor': ['Leadership','Childcare','Activity planning','Communication','First aid / CPR','Teamwork'],
+  'lifeguard': ['Water safety','First aid / CPR','Surveillance','Communication','Emergency response','Physical fitness'],
+  'dog walker': ['Animal care','Reliability','Time management','Communication','Physical fitness'],
+  'team member': ['Customer service','Teamwork','Flexibility','Communication','Product knowledge'],
+  'crew member': ['Customer service','Food safety','Teamwork','Fast-paced work','Cash handling'],
+  'other': ['Communication','Reliability','Teamwork','Time management','Adaptability'],
+};
+
+const ACT_SKILLS = {
+  clubs: ['Teamwork','Communication','Organization','Time management','Commitment'],
+  leadership: ['Leadership','Event planning','Public speaking','Decision-making','Accountability'],
+  vol: ['Community service','Teamwork','Communication','Empathy','Reliability'],
+  sports: ['Teamwork','Discipline','Physical fitness','Time management','Resilience','Coachability'],
+  informal: ['Reliability','Time management','Self-motivation','Communication','Responsibility'],
+};
+
+const PREF_INFER = {
+  'student council': ['Team environment','Leadership opportunities'],
+  leadership: ['Leadership opportunities','Team environment'],
+  vol: ['Helping others','Customer interaction'],
+  sports: ['Physical activity','Team environment'],
+  cashier: ['Customer interaction','Fast-paced'],
+  server: ['Customer interaction','Fast-paced','Team environment'],
+  barista: ['Customer interaction','Fast-paced','Team environment'],
+  'retail sales associate': ['Customer interaction','Team environment'],
+  'sales associate': ['Customer interaction','Team environment'],
+  'warehouse associate': ['Physical activity'],
+  'lawn care': ['Physical activity'],
+  tutor: ['Helping others','Learning on the job'],
+  'office assistant': ['Working independently'],
+  receptionist: ['Customer interaction','Working independently'],
+};
+
+const JOB_CARDS = [
+  { role:'Barista', company:'Starbucks', emoji:'☕', color:'#00704A',
+    pay:'$15–17/hr', hours:'Part-time', distance:'3 miles away',
+    perks:['No experience needed','Paid training','Free drinks on shift'],
+    vibe:'Busy mornings, regulars who know your name' },
+  { role:'Team Member', company:'Target', emoji:'🎯', color:'#CC0000',
+    pay:'$15/hr', hours:'Full or Part-time', distance:'5 miles away',
+    perks:['No experience needed','Employee discount','Flexible shifts'],
+    vibe:'Always something new to do, friendly team' },
+  { role:'Crew Member', company:'Chipotle', emoji:'🌯', color:'#A81612',
+    pay:'$16–18/hr', hours:'Full-time', distance:'2 miles away',
+    perks:['No experience needed','Free meals every shift','Fast career growth'],
+    vibe:'High-energy, tight team, learn the line fast' },
+  { role:'Front Desk', company:'YMCA', emoji:'💪', color:'#0E4C96',
+    pay:'$14–16/hr', hours:'Part-time', distance:'4 miles away',
+    perks:['No experience needed','Free gym membership','Community-focused'],
+    vibe:'Genuinely helping your community every day' },
+  { role:'Warehouse Associate', company:'Amazon', emoji:'📦', color:'#232F3E',
+    pay:'$19/hr', hours:'Full-time', distance:'8 miles away',
+    perks:['No experience needed','Same-day pay available','Sign-on bonus'],
+    vibe:'Clear targets, physical work, no guesswork' },
+];
+
+// ══════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════
+const STEP_MAP = { info:1,'exp-type':2,'work-exp':2,activities:3,skills:4,prefs:5,swipe:6,profile:6 };
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  const step = STEP_MAP[id]||0;
+  document.getElementById('progress-fill').style.width = step ? Math.round(step/6*100)+'%' : '0%';
+}
+
+// ══════════════════════════════════════════════════════
+// CITY AUTOCOMPLETE
+// ══════════════════════════════════════════════════════
+function filterCities(val) {
+  const dd = document.getElementById('city-dropdown');
+  if (!val || val.length < 2) { dd.classList.remove('open'); return; }
+  const matches = CITIES.filter(c=>c.toLowerCase().includes(val.toLowerCase())).slice(0,6);
+  if (!matches.length) { dd.classList.remove('open'); return; }
+  dd.innerHTML = matches.map(c=>`<div class="autocomplete-item" onmousedown="selectCity('${c}')">${c}</div>`).join('');
+  dd.classList.add('open');
+}
+function selectCity(city) {
+  document.getElementById('input-location').value = city;
+  document.getElementById('city-dropdown').classList.remove('open');
+  checkInfoNext();
+}
+function hideCitiesDelayed() { setTimeout(()=>document.getElementById('city-dropdown').classList.remove('open'),200); }
+
+// ══════════════════════════════════════════════════════
+// CHIPS (generic)
+// ══════════════════════════════════════════════════════
+function toggleChip(el) { el.classList.toggle('selected'); }
+function selectSingle(el, groupId) {
+  document.querySelectorAll(`#${groupId} .chip`).forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ══════════════════════════════════════════════════════
+// WELCOME
+// ══════════════════════════════════════════════════════
+function handleUpload() { showToast('📄 Resume import coming soon — it\'ll pre-fill everything for you!'); }
+
+// ── IP-based city detection ──────────────────────────────
+async function detectCityFromIP() {
+  try {
+    const res = await fetch('https://ipwho.is/');
+    const data = await res.json();
+    if (data.success && data.city && data.region_code) {
+      const inp = document.getElementById('input-location');
+      if (inp && !inp.value) {
+        inp.value = `${data.city}, ${data.region_code}`;
+        inp.style.color = 'var(--muted)';
+        inp.addEventListener('input', ()=>inp.style.color='', {once:true});
+        const hint = document.getElementById('location-detected-hint');
+        if (hint) hint.style.display = 'block';
+        checkInfoNext();
+      }
+    }
+  } catch(e) { /* silent fail — user types manually */ }
+}
+detectCityFromIP();
+
+// ── Work type Other chip ─────────────────────────────────
+function toggleWorkTypeOther(chip) {
+  chip.classList.toggle('selected');
+  document.getElementById('work-type-other-wrap').style.display =
+    chip.classList.contains('selected') ? 'flex' : 'none';
+}
+function addWorkTypeOther() {
+  const inp = document.getElementById('work-type-other-input');
+  const val = inp.value.trim();
+  if (!val) return;
+  const group = document.getElementById('chips-work-type');
+  // Don't duplicate
+  if (Array.from(group.querySelectorAll('.chip')).some(c=>c.textContent.trim()===val)) { inp.value=''; return; }
+  const chip = document.createElement('button');
+  chip.className = 'chip selected';
+  chip.textContent = val;
+  chip.onclick = ()=>toggleChip(chip);
+  // Insert before Other chip
+  const otherChip = Array.from(group.querySelectorAll('.chip')).find(c=>c.textContent.trim()==='Other');
+  group.insertBefore(chip, otherChip||null);
+  // Deselect Other chip and hide input
+  if (otherChip) otherChip.classList.remove('selected');
+  document.getElementById('work-type-other-wrap').style.display = 'none';
+  inp.value = '';
+}
+
+// ══════════════════════════════════════════════════════
+// INFO
+// ══════════════════════════════════════════════════════
+function checkInfoNext() {
+  const ok = document.getElementById('input-first').value.trim() && document.getElementById('input-last').value.trim();
+  document.getElementById('btn-info-next').disabled = !ok;
+}
+function submitInfo() {
+  S.firstName = document.getElementById('input-first').value.trim();
+  S.lastName  = document.getElementById('input-last').value.trim();
+  S.location  = document.getElementById('input-location').value.trim();
+  S.workTypes = getGroupSelected('chips-work-type');
+  goTo('exp-type');
+}
+
+// ══════════════════════════════════════════════════════
+// EXP TYPE
+// ══════════════════════════════════════════════════════
+function selectExpType(t) {
+  S.expType = t;
+  ['yes','some','none'].forEach(x=>document.getElementById('opt-'+x).classList.remove('selected'));
+  document.getElementById('opt-'+t).classList.add('selected');
+  document.getElementById('btn-exptype-next').disabled = false;
+}
+function submitExpType() {
+  if (!S.expType) return;
+  if (S.expType === 'none') {
+    document.getElementById('act-title').textContent = "What have you been up to?";
+    document.getElementById('act-subtitle').textContent = "You've done more than you think — clubs, sports, volunteering, and side work all count as real experience";
+    goTo('activities');
+  } else {
+    document.getElementById('act-title').textContent = "Beyond your work, what else?";
+    document.getElementById('act-subtitle').textContent = "School clubs, sports, volunteering — every experience builds your profile";
+    goTo('work-exp');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// WORK EXP — Role search (text input primary)
+// ══════════════════════════════════════════════════════
+let jobFormOpen = false, editingRole = null;
+const COMMON_ROLES = ['Cashier','Server','Barista','Retail Sales Associate','Team Member','Crew Member','Stocker','Warehouse Associate','Office Assistant','Babysitter','Tutor','Delivery Driver'];
+
+function showJobForm() {
+  if (jobFormOpen) return;
+  jobFormOpen = true;
+  document.getElementById('btn-add-job').style.display = 'none';
+  document.getElementById('job-form-container').innerHTML = `
+    <div class="job-form">
+      <div class="job-form-section">
+        <label class="job-form-label" style="margin-bottom:7px">What was your role?</label>
+        <div class="role-search-wrap">
+          <input type="text" id="jf-role-input" placeholder="Type your role, e.g. Cashier, Barista…"
+            oninput="handleRoleSearch(this.value)" autocomplete="off" />
+          <div class="role-search-results" id="role-search-results"></div>
+        </div>
+        <div style="margin-top:8px">
+          <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500">Common roles</span>
+          <div class="chip-group" style="margin-top:6px">
+            ${COMMON_ROLES.map(r=>`<button class="chip" style="font-size:13px" onclick="pickRole('${r}')">${r}</button>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div id="jf-rest" style="display:none">
+        <div class="job-form-section">
+          <label class="job-form-label">Company or place name <span style="font-weight:400;text-transform:none">(optional)</span></label>
+          <input type="text" id="jf-company" placeholder="e.g. McDonald's, Corner Coffee Shop…" />
+        </div>
+        <div class="job-form-section">
+          <label class="job-form-label">How long did you work there?</label>
+          <div class="chip-group" id="chips-jf-duration">
+            ${['Less than 3 months','3–6 months','6–12 months','1–2 years','2+ years','Still working here'].map(d=>`<button class="chip single-select" onclick="selectSingle(this,'chips-jf-duration')">${d}</button>`).join('')}
+          </div>
+        </div>
+        <div class="job-form-section">
+          <label class="job-form-label">Skills from this role — tap to remove any that don't fit</label>
+          <div class="infer-banner" id="jf-infer-banner" style="font-size:12px">
+            <span class="infer-icon">✦</span>
+            <span id="jf-infer-text">These skills are typical for this role</span>
+          </div>
+          <div class="chip-group" id="chips-jf-skills"></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <input type="text" id="jf-custom-skill" placeholder="Add a skill not listed…" style="flex:1;font-size:14px" />
+            <button class="btn-primary" style="width:auto;padding:10px 14px;font-size:13px" onclick="addJfSkill()">Add</button>
+          </div>
+        </div>
+        <div class="job-form-section">
+          <label class="job-form-label">What did you actually do in this role? <span style="font-weight:400;text-transform:none">(optional)</span></label>
+          <textarea id="jf-desc" placeholder="Write naturally — we'll clean it up for your profile. e.g. 'Served 50+ tables a night, handled cash, trained new staff…'" style="min-height:80px"></textarea>
+          <span class="text-muted">Even rough notes are fine — we'll polish the language</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary" onclick="cancelJobForm()" style="font-size:14px;padding:12px">Cancel</button>
+          <button class="btn-primary" onclick="saveJob()" style="font-size:14px;padding:12px">Save this job</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function handleRoleSearch(val) {
+  const res = document.getElementById('role-search-results');
+  if (!val || val.length < 2) { res.classList.remove('open'); return; }
+  const matches = ALL_ROLES.filter(r=>r.toLowerCase().includes(val.toLowerCase())).slice(0,6);
+  if (!matches.length) { res.classList.remove('open'); return; }
+  res.innerHTML = matches.map(r=>`<div class="role-result-item" onmousedown="pickRole('${r}')">${r}</div>`).join('');
+  res.classList.add('open');
+}
+
+function pickRole(role) {
+  editingRole = role.toLowerCase();
+  document.getElementById('jf-role-input').value = role;
+  const res = document.getElementById('role-search-results');
+  if (res) res.classList.remove('open');
+  // Highlight the tapped common-role chip if applicable
+  document.querySelectorAll('.job-form .chip').forEach(c=>{
+    c.classList.toggle('selected', c.textContent.trim()===role);
+  });
+  document.getElementById('jf-rest').style.display = 'block';
+  populateJfSkills(editingRole);
+}
+
+function populateJfSkills(role) {
+  const skills = ROLE_SKILLS[role] || ROLE_SKILLS['other'];
+  document.getElementById('chips-jf-skills').innerHTML = skills.map(s=>
+    `<button class="chip inferred selected" onclick="this.classList.toggle('selected')">${s}</button>`
+  ).join('');
+  document.getElementById('jf-infer-text').textContent =
+    `Common skills for a ${role} role — remove any that don't apply to you`;
+}
+
+function addJfSkill() {
+  const inp = document.getElementById('jf-custom-skill');
+  const val = inp.value.trim();
+  if (!val) return;
+  const c = document.createElement('button');
+  c.className='chip selected'; c.textContent=val;
+  c.onclick=()=>c.classList.toggle('selected');
+  document.getElementById('chips-jf-skills').appendChild(c);
+  inp.value='';
+}
+
+function cancelJobForm() {
+  document.getElementById('job-form-container').innerHTML='';
+  document.getElementById('btn-add-job').style.display='';
+  jobFormOpen=false; editingRole=null;
+}
+
+function saveJob() {
+  // Accept typed role even if not picked from list
+  const roleInput = document.getElementById('jf-role-input').value.trim();
+  if (!roleInput) { showToast('Please enter your role'); return; }
+  if (!editingRole) editingRole = roleInput.toLowerCase();
+  const company  = document.getElementById('jf-company').value.trim();
+  const durSel   = document.querySelector('#chips-jf-duration .chip.selected');
+  const duration = durSel ? durSel.textContent.trim() : '';
+  const skills   = Array.from(document.querySelectorAll('#chips-jf-skills .chip.selected')).map(c=>c.textContent.trim());
+  const description = document.getElementById('jf-desc').value.trim();
+  S.workExps.push({ role:capitalize(roleInput), company, duration, skills, description });
+  renderExpEntries();
+  cancelJobForm();
+  document.getElementById('btn-workexp-next').disabled = false;
+}
+
+function renderExpEntries() {
+  document.getElementById('exp-entries').innerHTML = S.workExps.map((e,i)=>`
+    <div class="exp-entry">
+      <div class="exp-entry-head">
+        <div class="exp-entry-role">${e.role}</div>
+        <button class="remove-btn" onclick="removeExp(${i})">×</button>
+      </div>
+      <div class="exp-entry-meta">${[e.company,e.duration].filter(Boolean).join(' · ')}</div>
+      ${e.description?`<div class="exp-entry-desc">${e.description}</div>`:''}
+    </div>`).join('');
+  // Hide the skip prompt once the user has added at least one job
+  document.getElementById('btn-skip-activities').style.display = S.workExps.length > 0 ? 'none' : '';
+}
+function removeExp(i) { S.workExps.splice(i,1); renderExpEntries(); if(!S.workExps.length) document.getElementById('btn-workexp-next').disabled=true; }
+
+// ══════════════════════════════════════════════════════
+// ACTIVITIES — with per-item descriptions & per-club roles
+// ══════════════════════════════════════════════════════
+function toggleActCard(id) { document.getElementById('act-'+id).classList.toggle('open'); }
+function goActBack() { if(S.expType==='none') goTo('exp-type'); else goTo('work-exp'); }
+
+function toggleActivityChip(chip, category) {
+  const name = chip.textContent.trim();
+  if (name === 'Other') {
+    chip.classList.toggle('selected');
+    showOtherInput(category, chip.classList.contains('selected'));
+    return;
+  }
+  chip.classList.toggle('selected');
+  if (chip.classList.contains('selected')) {
+    addActEntry(category, name);
+  } else {
+    removeActEntry(category, name);
+  }
+  renderActDescriptions(category);
+  refreshActCount(category);
+}
+
+function showOtherInput(category, show) {
+  const wrap = document.getElementById('other-'+category+'-wrap');
+  if (wrap) wrap.style.display = show ? 'flex' : 'none';
+}
+
+function addOtherChip(category) {
+  const inp = document.getElementById('other-'+category+'-input');
+  const val = inp.value.trim();
+  if (!val) return;
+  const container = document.getElementById('chips-'+category);
+  // Check for duplicate
+  if (Array.from(container.querySelectorAll('.chip')).some(c=>c.textContent.trim()===val)) { inp.value=''; return; }
+  const chip = document.createElement('button');
+  chip.className='chip selected';
+  chip.textContent = val;
+  chip.onclick = ()=>toggleActivityChip(chip, category);
+  // Insert before the Other chip
+  const otherChip = Array.from(container.querySelectorAll('.chip')).find(c=>c.textContent.trim()==='Other');
+  container.insertBefore(chip, otherChip||null);
+  inp.value='';
+  // Deselect Other chip
+  if (otherChip) otherChip.classList.remove('selected');
+  showOtherInput(category, false);
+  addActEntry(category, val);
+  renderActDescriptions(category);
+  refreshActCount(category);
+}
+
+function getActArray(category) {
+  if (category==='clubs') return S.acts.clubs;
+  if (category==='vol') return S.acts.vol;
+  if (category==='sports') return S.acts.sports;
+  if (category==='informal') return S.acts.informal;
+  return [];
+}
+
+function addActEntry(category, name) {
+  const arr = getActArray(category);
+  if (!arr.find(e=>e.name===name)) arr.push({name, role:'', description:''});
+}
+function removeActEntry(category, name) {
+  const arr = getActArray(category);
+  const idx = arr.findIndex(e=>e.name===name);
+  if (idx>=0) arr.splice(idx,1);
+}
+
+function renderActDescriptions(category) {
+  const arr = getActArray(category);
+  if (category==='clubs') { renderClubDetails(); return; }
+  const sectionId = category+'-desc-section';
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+  if (!arr.length) { section.innerHTML=''; return; }
+  section.innerHTML = `<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+    <div class="field-label" style="margin-bottom:12px">Tell us more about each one <span style="font-weight:400;text-transform:none">(optional)</span></div>
+    ${arr.map((e,i)=>`
+      <div class="act-desc-item">
+        <div class="act-desc-label">${e.name}</div>
+        <textarea placeholder="What did you do? Write naturally — we'll clean it up." rows="2"
+          oninput="updateActDesc('${category}',${i},this.value)">${e.description}</textarea>
+      </div>`).join('')}
+  </div>`;
+}
+
+function renderClubDetails() {
+  const clubs = S.acts.clubs;
+  const section = document.getElementById('club-details-section');
+  if (!clubs.length) { section.innerHTML=''; return; }
+  const ROLES = ['President','VP','Treasurer','Secretary','Captain','Committee Chair','Member'];
+  section.innerHTML = `<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+    <div class="field-label" style="margin-bottom:12px">Tell us more about each activity <span style="font-weight:400;text-transform:none">(optional)</span></div>
+    ${clubs.map((c,i)=>`
+      <div class="club-detail-row">
+        <div class="club-detail-name">${c.name}</div>
+        <div style="margin-bottom:8px">
+          <div class="field-label" style="margin-bottom:6px">Leadership role?</div>
+          <div class="club-role-chips">
+            ${ROLES.map(r=>`<button class="chip single-select ${c.role===r?'selected':''}"
+              onclick="setClubRole(${i},'${r}',this)">${r}</button>`).join('')}
+          </div>
+        </div>
+        <textarea placeholder="What did you do in ${c.name}? Write naturally — we'll clean it up." rows="2"
+          oninput="setClubDesc(${i},this.value)">${c.description||''}</textarea>
+      </div>`).join('')}
+  </div>`;
+}
+
+function setClubRole(i, role, el) {
+  S.acts.clubs[i].role = role;
+  const row = el.closest('.club-detail-row');
+  row.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function setClubDesc(i, val) { S.acts.clubs[i].description = val; }
+function updateActDesc(category, i, val) { getActArray(category)[i].description = val; }
+
+function refreshActCount(category) {
+  const arr = getActArray(category);
+  const badge = document.getElementById('count-'+category);
+  badge.style.display = arr.length ? 'inline-flex' : 'none';
+  badge.textContent = arr.length;
+  document.getElementById('act-'+category).classList.toggle('filled', arr.length>0);
+}
+function refreshSchoolCount() {
+  const n = S.acts.clubs.length + (document.getElementById('act-school-name').value.trim()?1:0);
+  const badge = document.getElementById('count-school');
+  badge.style.display = n ? 'inline-flex' : 'none';
+  badge.textContent = n;
+  document.getElementById('act-school').classList.toggle('filled', n>0);
+}
+
+function submitActivities() {
+  S.acts.schoolName = document.getElementById('act-school-name').value.trim();
+  buildSkillsScreen();
+  goTo('skills');
+}
+
+// ══════════════════════════════════════════════════════
+// SKILLS
+// ══════════════════════════════════════════════════════
+function buildSkillsScreen() {
+  const inferred = new Set();
+  const sources = [];
+
+  S.workExps.forEach(e=>{
+    (ROLE_SKILLS[e.role.toLowerCase()]||ROLE_SKILLS['other']).forEach(s=>inferred.add(s));
+    sources.push(e.role);
+  });
+  if (S.acts.clubs.length) {
+    ACT_SKILLS.clubs.forEach(s=>inferred.add(s));
+    if (S.acts.clubs.some(c=>c.role&&c.role!=='Member')) ACT_SKILLS.leadership.forEach(s=>inferred.add(s));
+    sources.push('school activities');
+  }
+  if (S.acts.vol.length) { ACT_SKILLS.vol.forEach(s=>inferred.add(s)); sources.push('volunteering'); }
+  if (S.acts.sports.length) { ACT_SKILLS.sports.forEach(s=>inferred.add(s)); sources.push('sports'); }
+  if (S.acts.informal.length) { ACT_SKILLS.informal.forEach(s=>inferred.add(s)); sources.push('side work'); }
+
+  S.inferredSkills = [...inferred];
+  S.selectedSkills = [...inferred];
+
+  const suggested = ['Punctuality','Problem solving','Adaptability','Positive attitude','Work ethic','Active listening','Following instructions','Initiative'].filter(s=>!inferred.has(s));
+
+  if (inferred.size) {
+    document.getElementById('skills-inferred-section').style.display='block';
+    document.getElementById('infer-banner').style.display='flex';
+    const src = sources.length<=2 ? sources.join(' and ') : sources.slice(0,-1).join(', ')+' and '+sources.slice(-1);
+    document.getElementById('infer-banner-text').textContent=`Based on your ${src} — remove anything that doesn't fit`;
+    document.getElementById('chips-inferred').innerHTML=[...inferred].map(s=>
+      `<button class="chip inferred selected" data-skill="${s}" onclick="toggleSkillChip(this,'${s}')">${s}</button>`
+    ).join('');
+  }
+  if (suggested.length) {
+    document.getElementById('skills-suggested-section').style.display='block';
+    document.getElementById('chips-suggested').innerHTML=suggested.map(s=>
+      `<button class="chip" data-skill="${s}" onclick="toggleSkillChip(this,'${s}')">${s}</button>`
+    ).join('');
+  }
+}
+
+function toggleSkillChip(el, skill) {
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) { if(!S.selectedSkills.includes(skill)) S.selectedSkills.push(skill); }
+  else S.selectedSkills = S.selectedSkills.filter(s=>s!==skill);
+}
+
+function addCustomSkill() {
+  const inp = document.getElementById('input-custom-skill');
+  const val = inp.value.trim();
+  if (!val) return;
+  S.customSkills.push(val); S.selectedSkills.push(val);
+  document.getElementById('skills-custom-section').style.display='block';
+  const chip = document.createElement('button');
+  chip.className='chip selected'; chip.textContent=val;
+  chip.onclick=()=>{ chip.classList.toggle('selected'); if(!chip.classList.contains('selected')) S.selectedSkills=S.selectedSkills.filter(s=>s!==val); else S.selectedSkills.push(val); };
+  document.getElementById('chips-custom').appendChild(chip);
+  inp.value='';
+}
+
+function toggleExpand(panelId, iconId) {
+  const p=document.getElementById(panelId), ic=document.getElementById(iconId);
+  p.classList.toggle('open');
+  ic.textContent = p.classList.contains('open')?'－':'＋';
+}
+
+function submitSkills() {
+  S.selectedSkills = [
+    ...Array.from(document.querySelectorAll('#chips-inferred .chip.selected')).map(c=>c.textContent.trim()),
+    ...Array.from(document.querySelectorAll('#chips-suggested .chip.selected')).map(c=>c.textContent.trim()),
+    ...S.customSkills,
+  ];
+  buildPrefsScreen();
+  goTo('prefs');
+}
+
+// ══════════════════════════════════════════════════════
+// PREFERENCES
+// ══════════════════════════════════════════════════════
+function buildPrefsScreen() {
+  const inferred = new Set();
+  const sources = [];
+  S.workExps.forEach(e=>{
+    const k=e.role.toLowerCase();
+    if(PREF_INFER[k]){PREF_INFER[k].forEach(p=>inferred.add(p));sources.push(e.role);}
+  });
+  if (S.acts.clubs.some(c=>c.role&&c.role!=='Member')) { PREF_INFER.leadership.forEach(p=>inferred.add(p)); sources.push('school leadership'); }
+  if (S.acts.vol.length) { PREF_INFER.vol.forEach(p=>inferred.add(p)); sources.push('volunteering'); }
+  if (S.acts.sports.length) { PREF_INFER.sports.forEach(p=>inferred.add(p)); sources.push('sports'); }
+
+  S.inferredPrefs = [...inferred];
+  if (inferred.size) {
+    document.getElementById('pref-infer-banner').style.display='flex';
+    const src = sources.length<=2?sources.join(' and '):sources.slice(0,-1).join(', ')+' and '+sources.slice(-1);
+    document.getElementById('pref-infer-text').textContent=`From your ${src} experience, we've pre-selected these — change anything`;
+    document.querySelectorAll('#chips-values .pref-card').forEach(card=>{
+      const label = card.querySelector('.pref-card-label').textContent.trim();
+      if (inferred.has(label)) card.classList.add('inferred','selected');
+    });
+  }
+}
+
+function selectHoursCard(el) {
+  document.querySelectorAll('.hours-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function submitPrefs() {
+  S.prefs.values = Array.from(document.querySelectorAll('#chips-values .pref-card.selected'))
+    .map(c=>c.querySelector('.pref-card-label').textContent.trim());
+  const hCard = document.querySelector('.hours-card.selected');
+  S.prefs.hours = hCard ? hCard.querySelector('.hours-card-label').textContent.trim() : '';
+  S.prefs.schedule = Array.from(document.querySelectorAll('#chips-schedule .chip.selected'))
+    .map(c=>c.dataset.value||c.textContent.trim());
+  S.prefs.commute  = Array.from(document.querySelectorAll('#chips-commute .chip.selected'))
+    .map(c=>c.dataset.value||c.textContent.trim());
+  const dChip = document.querySelector('#chips-distance .chip.selected');
+  S.prefs.distance = dChip ? (dChip.dataset.value||dChip.textContent.trim()) : '';
+  buildSwipeScreen();
+  goTo('swipe');
+}
+
+// ══════════════════════════════════════════════════════
+// SWIPE
+// ══════════════════════════════════════════════════════
+function buildSwipeScreen() {
+  const stack = document.getElementById('card-stack');
+  stack.innerHTML='';
+  [...JOB_CARDS].reverse().forEach((job,i)=>{
+    const idx = JOB_CARDS.length-1-i;
+    const pos = idx===0?'top':idx===1?'mid':'back';
+    stack.insertAdjacentHTML('beforeend',`
+      <div class="job-card ${pos}" id="jcard-${idx}">
+        <div class="jc-hero" style="background:${job.color}">
+          <div class="jc-emoji">${job.emoji}</div>
+          <div class="jc-role">${job.role}</div>
+          <div class="jc-co">${job.company}</div>
+        </div>
+        <div class="jc-body">
+          <div class="jc-pay-row">
+            <div class="jc-pay">${job.pay}</div>
+            <div class="jc-hours">${job.hours}</div>
+          </div>
+          <div class="jc-loc">📍 ${job.distance}</div>
+          <div class="jc-perks">
+            ${job.perks.map(p=>`<div class="jc-perk"><div class="jc-perk-dot">✓</div>${p}</div>`).join('')}
+          </div>
+          <div class="jc-vibe">"${job.vibe}"</div>
+        </div>
+      </div>`);
+  });
+  // Build progress dots
+  const dots = document.getElementById('swipe-dots');
+  dots.innerHTML = JOB_CARDS.map((_,i)=>
+    `<div class="swipe-dot ${i===0?'active':''}" id="dot-${i}"></div>`
+  ).join('');
+}
+function updateSwipeProgress() {
+  JOB_CARDS.forEach((_,i)=>{
+    const dot = document.getElementById('dot-'+i);
+    if (!dot) return;
+    dot.className = 'swipe-dot' + (i < S.swipeIndex ? ' done' : i === S.swipeIndex ? ' active' : '');
+  });
+}
+function swipeJob(liked) {
+  if (S.swipeIndex>=JOB_CARDS.length) return;
+  const card = document.getElementById('jcard-'+S.swipeIndex);
+  card.classList.add(liked?'gone-right':'gone-left');
+  S.swipeLiked.push({job:JOB_CARDS[S.swipeIndex],liked});
+  S.swipeIndex++;
+  setTimeout(()=>{
+    if (S.swipeIndex<JOB_CARDS.length) {
+      document.getElementById('jcard-'+S.swipeIndex)?.classList.replace('mid','top');
+      if (S.swipeIndex+1<JOB_CARDS.length)
+        document.getElementById('jcard-'+(S.swipeIndex+1))?.classList.replace('back','mid');
+      updateSwipeProgress();
+    } else {
+      showSwipeDone();
+    }
+  },300);
+}
+function showSwipeDone() {
+  document.getElementById('card-stack').style.display='none';
+  document.getElementById('swipe-controls').style.display='none';
+  document.getElementById('swipe-done').style.display='flex';
+}
+function goToProfile() { buildProfile(); goTo('profile'); }
+
+// ══════════════════════════════════════════════════════
+// PROFILE GENERATION
+// ══════════════════════════════════════════════════════
+function buildProfile() {
+  const slug=(S.firstName+'-'+S.lastName[0]).toLowerCase().replace(/[^a-z0-9-]/g,'');
+  document.getElementById('profile-url-slug').textContent=slug;
+  document.getElementById('profile-content').innerHTML=generateProfileHTML();
+}
+
+function generateProfileHTML() {
+  const name=`${S.firstName} ${S.lastName}`;
+  const headline=genHeadline();
+  const bio=genBio();
+  const expItems=genExpItems();
+  const skills=S.selectedSkills.slice(0,18);
+  const {values,hours,schedule,commute,distance}=S.prefs;
+  return `
+    <div class="profile-hero">
+      <div class="profile-name">${name}</div>
+      <div class="profile-headline">${headline}</div>
+      ${S.location?`<div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:12px">📍 ${S.location}</div>`:''}
+      <div class="verified-badge">✓ Verified by Snagajob</div>
+    </div>
+    <div class="profile-sec" id="profile-bio-section">
+      <div class="profile-sec-title">About</div>
+      <div class="profile-bio" id="profile-bio-text">${bio}</div>
+    </div>
+    ${expItems.length?`
+    <div class="profile-sec" id="profile-exp-section">
+      <div class="profile-sec-title">Experience & activities</div>
+      ${expItems.map(e=>`
+        <div class="profile-exp-item">
+          <div class="profile-exp-role">${e.title}</div>
+          <div class="profile-exp-org">${e.org}</div>
+          ${e.description?`<div class="profile-exp-desc">${e.description}</div>`:''}
+        </div>`).join('')}
+    </div>`:''}
+    ${skills.length?`
+    <div class="profile-sec">
+      <div class="profile-sec-title">Skills</div>
+      <div class="profile-skills-wrap">${skills.map(s=>`<span class="profile-skill">${s}</span>`).join('')}</div>
+    </div>`:''}
+    ${(values.length||hours||schedule.length||commute.length||distance)?`
+    <div class="profile-sec">
+      <div class="profile-sec-title">Work preferences</div>
+      <div class="profile-prefs">
+        ${values.length?`<div>${values.join(' · ')}</div>`:''}
+        ${hours?`<div>${hours}${schedule.length?' · '+schedule.join(', '):''}</div>`:''}
+        ${(commute.length||distance)?`<div>${[commute.join(', '),distance?'Travel: '+distance:''].filter(Boolean).join(' · ')}</div>`:''}
+      </div>
+    </div>`:''}`;
+}
+
+function genHeadline() {
+  if (S.workExps.length) return `${S.workExps[0].role} · Eager to grow`;
+  const hasLeader = S.acts.clubs.some(c=>c.role&&c.role!=='Member');
+  if (hasLeader) return 'Student leader · Motivated first-time jobseeker';
+  if (S.acts.sports.length) return 'Team player · Motivated first-time jobseeker';
+  if (S.acts.vol.length) return 'Community volunteer · Motivated first-time jobseeker';
+  return 'Motivated · Reliable · Ready to contribute';
+}
+
+function genBio() {
+  const first=S.firstName;
+  const parts=[];
+  if (S.workExps.length) {
+    const roles=S.workExps.map(e=>e.role.toLowerCase()).join(' and ');
+    parts.push(`${first} brings hands-on experience as a ${roles}`);
+  } else {
+    parts.push(`${first} is a motivated, dependable individual ready for their first professional role`);
+  }
+  const leaderRoles = S.acts.clubs.filter(c=>c.role&&c.role!=='Member').map(c=>c.role+' of '+c.name);
+  if (leaderRoles.length) parts.push(`demonstrated leadership as ${leaderRoles[0]}`);
+  else if (S.acts.clubs.length) parts.push('active in school clubs and community activities');
+  if (S.acts.vol.length) parts.push('a track record of community service and showing up when it counts');
+  if (S.acts.sports.length) parts.push(`discipline and teamwork built through ${S.acts.sports[0].name.toLowerCase()}`);
+  const topSkills=S.selectedSkills.slice(0,3);
+  if (topSkills.length) parts.push(`with strong ${topSkills.join(', ')} skills`);
+  if (parts.length===1) return parts[0]+'.';
+  const last=parts.pop();
+  return parts.join(', ')+' — and '+last+'.';
+}
+
+function genExpItems() {
+  const items=[];
+  S.workExps.forEach(e=>{
+    const cleanDesc = e.description ? polishDesc(e.description) : '';
+    items.push({
+      title: e.role,
+      org: [e.company,e.duration].filter(Boolean).join(' · '),
+      description: cleanDesc,
+      skills: (ROLE_SKILLS[e.role.toLowerCase()]||ROLE_SKILLS['other']).slice(0,4).join(' · ')
+    });
+  });
+  S.acts.clubs.forEach(c=>{
+    const roleLabel = c.role && c.role!=='Member' ? c.role+', ' : '';
+    items.push({
+      title: roleLabel+c.name,
+      org: S.acts.schoolName||'High School',
+      description: c.description ? polishDesc(c.description) : '',
+      skills: [...ACT_SKILLS.clubs,...(c.role&&c.role!=='Member'?ACT_SKILLS.leadership:[])].slice(0,4).join(' · ')
+    });
+  });
+  S.acts.vol.forEach(v=>{
+    items.push({
+      title: 'Volunteer — '+v.name,
+      org: 'Community service',
+      description: v.description ? polishDesc(v.description) : '',
+      skills: ACT_SKILLS.vol.slice(0,4).join(' · ')
+    });
+  });
+  S.acts.sports.forEach(sp=>{
+    items.push({
+      title: sp.name+' Player',
+      org: S.acts.schoolName||'School / Recreational League',
+      description: sp.description ? polishDesc(sp.description) : '',
+      skills: ACT_SKILLS.sports.slice(0,4).join(' · ')
+    });
+  });
+  S.acts.informal.forEach(iw=>{
+    items.push({
+      title: iw.name,
+      org: 'Self-employed',
+      description: iw.description ? polishDesc(iw.description) : '',
+      skills: ACT_SKILLS.informal.slice(0,3).join(' · ')
+    });
+  });
+  return items;
+}
+
+// Light polish: capitalise first letter, trim, add period if missing
+function polishDesc(text) {
+  const t = text.trim();
+  if (!t) return '';
+  const c = t.charAt(0).toUpperCase()+t.slice(1);
+  return c.endsWith('.')||c.endsWith('!')||c.endsWith('?') ? c : c+'.';
+}
+
+// ══════════════════════════════════════════════════════
+// CHATBOT
+// ══════════════════════════════════════════════════════
+function toggleChatbot() { document.getElementById('chatbot-drawer').classList.toggle('open'); }
+
+const CHAT_RESPONSES = {
+  'make my bio stronger': ()=>{
+    const el=document.getElementById('profile-bio-text');
+    if (el) {
+      let bio=el.textContent;
+      bio=bio.replace('motivated, dependable individual ready for their first professional role','driven, dependable professional who brings a strong work ethic and commitment to any team');
+      bio=bio.replace('hands-on experience','proven experience');
+      el.textContent=bio;
+      el.closest('.profile-sec').classList.add('flash');
+    }
+    flashUpdate();
+    return 'Done — I\'ve strengthened the language in your bio. Leads with your strengths and uses more confident framing.';
+  },
+  'more professional tone': ()=>{
+    flashUpdate();
+    return 'Updated your profile with stronger action verbs and more formal phrasing throughout. Replaced informal language and reframed any "first-time" messaging to focus on your readiness.';
+  },
+  'frame volunteering as work': ()=>{
+    const sec=document.getElementById('profile-exp-section');
+    if (sec) sec.classList.add('flash');
+    flashUpdate();
+    return 'Done — reframed your volunteer experience using professional language: "managed," "coordinated," and "delivered" instead of "helped with." It now reads like real work experience.';
+  },
+  'add leadership skills': ()=>{
+    flashUpdate();
+    return 'Added leadership-focused skills: strategic thinking, team facilitation, and conflict resolution. These were already implied by your background — now they\'re explicit on your profile.';
+  },
+  'tailor for food service': ()=>{
+    flashUpdate();
+    return 'Added food service context: food safety awareness, high-volume service, and cross-team coordination. Your existing skills translate well to this industry.';
+  },
+  'translate to spanish': ()=>{
+    flashUpdate();
+    const slug=document.getElementById('profile-url-slug').textContent;
+    return `Spanish translation coming soon — this will create a parallel profile at snagajob.com/${slug}-es`;
+  },
+};
+
+function chatSuggest(btn) {
+  const msg=btn.textContent.trim().toLowerCase();
+  appendChat(btn.textContent.trim(),'user');
+  btn.disabled=true;
+  setTimeout(()=>{
+    const handler=CHAT_RESPONSES[msg];
+    const reply=handler?handler():`Got it — I'll work on "${btn.textContent.trim()}" for your profile. In the full version this calls the Claude API to make live edits.`;
+    appendChat(reply,'ai');
+  },700);
+}
+function sendChat() {
+  const inp=document.getElementById('chat-input');
+  const msg=inp.value.trim();
+  if (!msg) return;
+  appendChat(msg,'user'); inp.value='';
+  setTimeout(()=>appendChat(`Understood — "${msg}". In the full version, Claude will make targeted changes to your profile in real time. For now, try the suggestion chips above!`,'ai'),700);
+}
+function appendChat(msg,type) {
+  const msgs=document.getElementById('chat-msgs');
+  const div=document.createElement('div');
+  div.className=`chat-msg ${type}`; div.textContent=msg;
+  msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight;
+  if (!document.getElementById('chatbot-drawer').classList.contains('open'))
+    document.getElementById('chatbot-drawer').classList.add('open');
+}
+function flashUpdate() {
+  const pill=document.getElementById('updated-pill');
+  pill.classList.add('show');
+  setTimeout(()=>pill.classList.remove('show'),2500);
+}
+
+// ══════════════════════════════════════════════════════
+// DOWNLOADS
+// ══════════════════════════════════════════════════════
+function copyLink() {
+  const slug=document.getElementById('profile-url-slug').textContent;
+  if (navigator.clipboard) navigator.clipboard.writeText('https://snagajob.com/'+slug);
+  showToast('🔗 Link copied! snagajob.com/'+slug);
+}
+function downloadPDF() { showToast('📄 PDF export coming soon in the full build'); }
+function downloadMd() {
+  const md=generateMarkdown();
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown'}));
+  a.download=`${S.firstName.toLowerCase()}-${S.lastName.toLowerCase()}-career-file.md`;
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('⬇ Career file downloaded!');
+}
+
+function generateMarkdown() {
+  const name=`${S.firstName} ${S.lastName}`;
+  const slug=(S.firstName+'-'+S.lastName[0]).toLowerCase();
+  const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const expItems=genExpItems();
+  let md=`# ${name} — Career File\n\n> snagajob.com/${slug}\n\n---\n\n## About\n\n${genBio()}\n\n`;
+  if (S.location) md+=`**Location:** ${S.location}\n\n`;
+  if (expItems.length) {
+    md+=`---\n\n## Experience & Activities\n\n`;
+    expItems.forEach(e=>{
+      md+=`### ${e.title}\n${e.org}\n\n`;
+      if (e.description) md+=`${e.description}\n\n`;
+      if (e.skills) md+=`*Skills: ${e.skills}*\n\n`;
+    });
+  }
+  if (S.selectedSkills.length) {
+    md+=`---\n\n## Skills\n\n${S.selectedSkills.map(s=>`- ${s}`).join('\n')}\n\n`;
+  }
+  const {values,hours,schedule,commute,distance}=S.prefs;
+  if (values.length||hours||schedule.length||commute.length||distance) {
+    md+=`---\n\n## Work Preferences\n\n`;
+    if (values.length) md+=`**Looking for:** ${values.join(', ')}\n\n`;
+    if (hours) md+=`**Hours:** ${hours}\n\n`;
+    if (schedule.length) md+=`**Schedule:** ${schedule.join(', ')}\n\n`;
+    if (commute.length) md+=`**Commute:** ${commute.join(', ')}\n\n`;
+    if (distance) md+=`**Max travel time:** ${distance}\n\n`;
+  }
+  const liked=S.swipeLiked.filter(j=>j.liked).map(j=>`${j.job.role} at ${j.job.company}`);
+  if (liked.length) md+=`---\n\n## Interested In\n\n${liked.map(j=>`- ${j}`).join('\n')}\n\n`;
+  md+=`---\n\n*Generated ${date} via Snagajob onboarding. Portable — use with any AI tool.*\n`;
+  return md;
+}
+
+// ══════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════
+function getGroupSelected(groupId) {
+  return Array.from(document.querySelectorAll(`#${groupId} .chip.selected`)).map(c=>c.textContent.trim());
+}
+function capitalize(str) { return str.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '); }
+
+// ══════════════════════════════════════════════════════
+// JOBS SCREEN
+// ══════════════════════════════════════════════════════
+const SNAGAJOB_JOBS = [
+  { emoji:'☕', color:'#00704A', role:'Barista', company:'Starbucks', distance:'1.2 mi', pay:'$15–17/hr', hours:'Part-time', badge:'Hiring now' },
+  { emoji:'🎯', color:'#CC0000', role:'Team Member', company:'Target', distance:'2.8 mi', pay:'$15/hr', hours:'Full or Part-time', badge:'New' },
+  { emoji:'🍔', color:'#DA291C', role:'Crew Member', company:'McDonald\'s', distance:'0.6 mi', pay:'$14–16/hr', hours:'Flexible', badge:'Urgent' },
+  { emoji:'💪', color:'#7DC242', role:'Front Desk Staff', company:'Planet Fitness', distance:'3.1 mi', pay:'$13–15/hr', hours:'Part-time', badge:'' },
+  { emoji:'🌯', color:'#A81612', role:'Crew Member', company:'Chipotle', distance:'2.1 mi', pay:'$16–18/hr', hours:'Full-time', badge:'Fast growth' },
+];
+
+const PARTNER_JOBS = [
+  { emoji:'👟', color:'#111111', role:'Sales Associate', company:'Nike', site:'nike.com', distance:'4.2 mi', pay:'$14–16/hr', hours:'Part-time' },
+  { emoji:'👕', color:'#E50010', role:'Store Associate', company:'H&M', site:'hm.com', distance:'3.8 mi', pay:'$14/hr', hours:'Part-time' },
+  { emoji:'📦', color:'#4D148C', role:'Warehouse Associate', company:'FedEx', site:'fedex.com', distance:'6.1 mi', pay:'$18–20/hr', hours:'Full-time' },
+  { emoji:'🍕', color:'#006491', role:'Delivery Driver', company:'Domino\'s', site:'dominos.com', distance:'2.4 mi', pay:'$15–20/hr', hours:'Flexible' },
+];
+
+function buildJobsScreen() {
+  const loc = S.location ? S.location.split(',')[0] : 'your area';
+
+  document.getElementById('snagajob-jobs-list').innerHTML =
+    SNAGAJOB_JOBS.map(j => `
+      <div class="job-listing">
+        <div class="jl-icon" style="background:${j.color}20;border:1px solid ${j.color}30">
+          <span>${j.emoji}</span>
+        </div>
+        <div class="jl-info">
+          <div class="jl-role">${j.role}</div>
+          <div class="jl-meta">${j.company} · ${j.distance}${j.badge ? ` · <span style="color:var(--green-dark);font-weight:500">${j.badge}</span>` : ''}</div>
+          <div class="jl-pay">${j.pay} · ${j.hours}</div>
+        </div>
+        <button class="jl-apply direct" onclick="handleDirectApply('${j.role}','${j.company}')">Apply →</button>
+      </div>`).join('');
+
+  document.getElementById('partner-jobs-list').innerHTML =
+    PARTNER_JOBS.map(j => `
+      <div class="job-listing">
+        <div class="jl-icon" style="background:${j.color}15;border:1px solid ${j.color}20">
+          <span>${j.emoji}</span>
+        </div>
+        <div class="jl-info">
+          <div class="jl-role">${j.role}</div>
+          <div class="jl-meta">${j.company} · ${j.distance}</div>
+          <div class="jl-pay">${j.pay} · ${j.hours}</div>
+        </div>
+        <button class="jl-apply partner" onclick="handlePartnerApply('${j.role}','${j.company}','${j.site}')">Apply ↗</button>
+      </div>`).join('');
+}
+
+function handleDirectApply(role, company) {
+  showToast(`Opening ${role} at ${company} on Snagajob…`);
+}
+
+function handlePartnerApply(role, company, site) {
+  // In production: trigger resume download then open job site
+  showToast(`Tip: download your .md resume first, then apply at ${site}`);
+}
+function showToast(msg) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
