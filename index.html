@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snagajob Prototypes</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1a2e;
+      --paper: #f4f4f6;
+      --muted: #6b6b80;
+      --rule: #e0e0ea;
+      --accent: #4a3fd4;
+      --accent-light: #eeedfb;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+    }
+
+    /* ── Layout ── */
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 0 clamp(24px, 6vw, 80px);
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 48px 0 40px;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .wordmark {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      letter-spacing: -0.01em;
+    }
+
+    .wordmark span {
+      color: var(--accent);
+    }
+
+    .header-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 72px 0 56px;
+      max-width: 560px;
+    }
+
+    .hero-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.6rem, 6vw, 4.2rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero p {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 420px;
+    }
+
+    /* ── Cards ── */
+    .cards-section {
+      padding-bottom: 80px;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 28px;
+      padding-top: 8px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1px;
+      border: 1px solid var(--rule);
+      background: var(--rule);
+    }
+
+    .card {
+      background: var(--paper);
+      padding: 40px 36px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s ease;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: var(--accent);
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card:hover { background: #f8f8fc; }
+    .card:hover::after { width: 100%; }
+
+    .card-number {
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .card-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin-bottom: 14px;
+      transition: color 0.2s ease;
+    }
+
+    .card:hover .card-title { color: var(--accent); }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 36px;
+      flex: 1;
+    }
+
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      font-weight: 500;
+      color: #fff;
+      background: var(--accent);
+      padding: 10px 20px;
+      border-radius: 100px;
+      transition: background 0.2s ease, transform 0.2s ease;
+      align-self: flex-start;
+    }
+
+    .card:hover .card-cta { background: #3830b8; }
+
+    .card-cta svg {
+      width: 14px; height: 14px;
+      transition: transform 0.25s ease;
+    }
+
+    .card:hover .card-cta svg { transform: translateX(3px); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* ── Fade-in ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+    .fade-up:nth-child(1) { animation-delay: 0.05s; }
+    .fade-up:nth-child(2) { animation-delay: 0.15s; }
+    .fade-up:nth-child(3) { animation-delay: 0.25s; }
+    .fade-up:nth-child(4) { animation-delay: 0.32s; }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <header class="fade-up">
+      <div class="wordmark">snaga<span>job</span></div>
+      <div class="header-meta">Design Prototypes</div>
+    </header>
+
+    <main>
+      <div class="hero fade-up">
+        <p class="hero-label">Overview</p>
+        <h1>Work in<br><em>progress.</em></h1>
+        <p>A collection of interactive prototypes exploring new directions for the Snagajob product experience.</p>
+      </div>
+
+      <div class="cards-section">
+        <p class="section-label fade-up">Prototypes — 2</p>
+
+        <div class="cards fade-up">
+
+          <a class="card"
+             href="https://stvph-jobs.github.io/snagajob-onboarding-prototype/living_profile_northstar.html"
+             target="_blank" rel="noopener">
+            <div class="card-number">01</div>
+            <h2 class="card-title">The North Star</h2>
+            <p class="card-desc">A vision prototype exploring the future of the living profile — dynamic, adaptive, and built around the job seeker.</p>
+            <div class="card-cta">
+              View prototype
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 8h10M9 4l4 4-4 4"/>
+              </svg>
+            </div>
+          </a>
+
+          <a class="card"
+             href="https://stvph-jobs.github.io/snagajob-onboarding-prototype/career_profile_onboarding.html"
+             target="_blank" rel="noopener">
+            <div class="card-number">02</div>
+            <h2 class="card-title">Onboarding</h2>
+            <p class="card-desc">A reimagined onboarding flow for career profiles — streamlined, intentional, and designed to reduce friction from day one.</p>
+            <div class="card-cta">
+              View prototype
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 8h10M9 4l4 4-4 4"/>
+              </svg>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <span>Snagajob Design</span>
+      <span>stvph-jobs · GitHub</span>
+    </footer>
+
+  </div>
+</body>
+</html>
