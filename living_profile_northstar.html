@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Living profile — north star</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{background:#f0f0f5;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem 3rem}
+.scene{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+.state-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+.state-lbl{font-size:11px;color:#64748B}
+.sbtn{font-size:11px;font-weight:500;padding:5px 13px;border-radius:20px;cursor:pointer;border:0.5px solid #cbd5e1;background:white;color:#64748B;transition:all 0.15s}
+.sbtn.on{background:#5b3ff8;color:white;border-color:#5b3ff8}
+.phone{width:365px;border:1.5px solid #d0d0d8;border-radius:32px;overflow:hidden;background:white;display:flex;flex-direction:column;max-height:740px}
+.chrome{background:#f1f5f9;padding:8px 13px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid #e2e8f0;flex-shrink:0}
+.cdots{display:flex;gap:4px}
+.cdot{width:8px;height:8px;border-radius:50%}
+.curl{flex:1;background:white;border:0.5px solid #e2e8f0;border-radius:6px;padding:3px 9px;font-size:11px;color:#5b3ff8;font-weight:500}
+.pg{display:none;flex-direction:column;height:700px;overflow:hidden}
+.pg.active{display:flex}
+.pscroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0}
+.obar{background:#1A1035;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.obar-l{display:flex;align-items:center;gap:7px}
+.obar-logo{font-size:13px;font-weight:500;color:white}
+.obar-badge{font-size:9px;font-weight:500;border-radius:5px;padding:2px 6px}
+.obar-r{display:flex;gap:5px}
+.obtn{font-size:10px;font-weight:500;padding:5px 10px;border-radius:10px;cursor:pointer;border:none;transition:all 0.15s}
+.obtn-ghost{background:rgba(255,255,255,0.1);color:#AFA9EC}
+.obtn-ghost:hover{background:rgba(255,255,255,0.18);color:white}
+.obtn-purple{background:#5b3ff8;color:white}
+.vbanner{background:#EEEDFE;border-bottom:0.5px solid #AFA9EC;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0}
+.vb-text{font-size:11px;color:#3C3489;line-height:1.4}
+.vb-text strong{color:#26215C}
+.vb-btns{display:flex;gap:5px;flex-shrink:0}
+.vbbtn{font-size:10px;font-weight:500;padding:5px 10px;border-radius:10px;cursor:pointer;border:none;white-space:nowrap}
+.hero-section{padding:16px 16px 0;display:flex;flex-direction:column;gap:10px}
+.hero-top{display:flex;gap:12px;align-items:flex-start}
+.av{width:52px;height:52px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;color:#3C3489;flex-shrink:0;position:relative}
+.av-ring{position:absolute;inset:-2px;border-radius:50%;border:2px solid #5b3ff8;opacity:0.4}
+.hero-info{flex:1}
+.pname{font-size:19px;font-weight:500;color:#1e293b}
+.phl{font-size:12px;color:#64748B;margin-top:2px}
+.ploc{font-size:11px;color:#64748B;margin-top:2px;display:flex;align-items:center;gap:3px}
+.avail-pill{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:500;margin-top:6px}
+.avail-dot{width:6px;height:6px;border-radius:50%}
+.badges-row{display:flex;gap:5px;flex-wrap:wrap}
+.pbadge{font-size:10px;font-weight:500;border-radius:20px;padding:3px 9px}
+.rank-nudge{background:#EEEDFE;border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:10px;margin:0 16px;flex-shrink:0}
+.rn-bar-bg{flex:1;height:5px;background:#AFA9EC;border-radius:3px;overflow:hidden}
+.rn-bar-fill{height:100%;background:#5b3ff8;border-radius:3px;width:78%}
+
+/* VIDEO SECTION */
+.video-section{margin:12px 16px 0}
+.sec-t{font-size:9px;font-weight:500;color:#64748B;text-transform:uppercase;letter-spacing:0.06em;padding-bottom:5px;border-bottom:0.5px solid #e2e8f0;margin-bottom:10px}
+.video-player{background:#1A1035;border-radius:12px;overflow:hidden;position:relative;cursor:pointer}
+.video-thumb{width:100%;height:150px;position:relative;overflow:hidden}
+.video-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.video-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:background 0.2s}
+.video-overlay:hover{background:rgba(0,0,0,0.25)}
+.play-btn{width:46px;height:46px;border-radius:50%;background:rgba(91,63,248,0.92);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.4)}
+.video-label{font-size:11px;color:rgba(255,255,255,0.85);font-weight:500}
+.video-playing-overlay{position:absolute;inset:0;background:rgba(26,16,53,0.92);display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px}
+.video-playing-overlay.active{display:flex}
+.video-meta{padding:8px 11px;display:flex;align-items:center;justify-content:space-between}
+.vm-name{font-size:11px;font-weight:500;color:white}
+.vm-dur{font-size:10px;color:#AFA9EC}
+
+.psection{padding:12px 16px 0}
+.exp-item{display:flex;gap:9px;margin-bottom:10px}
+.exp-item:last-child{margin-bottom:0}
+.edot{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.erole{font-size:12px;font-weight:500;color:#1e293b}
+.eco{font-size:11px;color:#64748B}
+.eskills{font-size:10px;color:#64748B;margin-top:1px}
+.cert-item{display:flex;align-items:center;gap:10px;padding:9px 11px;background:#f8fafc;border-radius:10px;border:0.5px solid #e2e8f0;margin-bottom:7px}
+.cert-item:last-child{margin-bottom:0}
+.cert-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cert-name{font-size:11px;font-weight:500;color:#1e293b}
+.cert-issuer{font-size:10px;color:#64748B;margin-top:1px}
+.cert-status{font-size:9px;font-weight:500;border-radius:5px;padding:2px 6px;white-space:nowrap;flex-shrink:0}
+.cert-view{font-size:9px;font-weight:500;color:#5b3ff8;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.sk-wrap{display:flex;flex-wrap:wrap;gap:4px}
+.sk{font-size:10px;padding:3px 8px;border-radius:20px;background:#f1f5f9;color:#64748B;border:0.5px solid #e2e8f0}
+.sk.lang{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC}
+.rec-item{background:#f8fafc;border-radius:12px;padding:11px 13px;margin-bottom:8px;border:0.5px solid #e2e8f0}
+.rec-item:last-child{margin-bottom:0}
+.rec-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.rec-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.rec-name{font-size:11px;font-weight:500;color:#1e293b}
+.rec-role{font-size:10px;color:#64748B}
+.rec-rel{font-size:9px;font-weight:500;border-radius:5px;padding:1px 6px;margin-left:auto;flex-shrink:0}
+.rec-body{font-size:11px;color:#475569;line-height:1.55;font-style:italic}
+.rec-tag{display:inline-block;font-size:9px;font-weight:500;background:#EEEDFE;color:#3C3489;border-radius:5px;padding:1px 6px;margin-top:5px}
+.timeline{display:flex;flex-direction:column;gap:0;position:relative;padding-left:16px}
+.tl-line{position:absolute;left:3px;top:8px;bottom:8px;width:1.5px;background:#e2e8f0}
+.tl-item{display:flex;gap:10px;position:relative;padding-bottom:14px}
+.tl-item:last-child{padding-bottom:0}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;position:relative;z-index:1;border:1.5px solid white}
+.tl-year{font-size:9px;font-weight:500;color:#64748B;margin-bottom:1px}
+.tl-title{font-size:11px;font-weight:500;color:#1e293b}
+.tl-sub{font-size:10px;color:#64748B}
+.pref-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:#f8fafc;border-radius:6px;margin-bottom:3px}
+.pref-row:last-child{margin-bottom:0}
+.prefl{font-size:10px;color:#64748B}
+.prefv{font-size:10px;font-weight:500;color:#1e293b}
+.profile-footer{padding:12px 16px;display:flex;flex-direction:column;gap:7px}
+.vrow{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:#f8fafc;border-radius:6px}
+.vbadge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:500;color:#3C3489}
+.qr-btn{font-size:9px;font-weight:500;color:#64748B;cursor:pointer;display:flex;align-items:center;gap:3px;background:none;border:none}
+.export-row{display:flex;gap:6px}
+.exbtn{flex:1;padding:9px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:none;text-align:center;transition:all 0.15s}
+.ai-drawer{border-top:0.5px solid #e2e8f0;background:white;flex-shrink:0}
+.dhandle{padding:9px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.dh-l{display:flex;align-items:center;gap:7px}
+.dh-ico{width:28px;height:28px;border-radius:8px;background:#5b3ff8;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dh-title{font-size:12px;font-weight:500;color:#1e293b}
+.dh-sub{font-size:10px;color:#64748B}
+.dtog{width:22px;height:22px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.drawer-body{max-height:0;overflow:hidden;transition:max-height 0.3s ease}
+.drawer-body.open{max-height:280px}
+.sugs{padding:8px 14px 4px;display:flex;gap:5px;flex-wrap:wrap}
+.sug{font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid #AFA9EC;background:#EEEDFE;color:#3C3489;cursor:pointer;transition:all 0.15s}
+.sug:hover{background:#CECBF6}
+.msgs{padding:4px 14px;display:flex;flex-direction:column;gap:5px;max-height:120px;overflow-y:auto}
+.msg{padding:7px 10px;border-radius:10px;font-size:11px;line-height:1.5;max-width:90%}
+.msg-u{background:#5b3ff8;color:white;align-self:flex-end;border-radius:10px 10px 3px 10px}
+.msg-a{background:#f1f5f9;color:#1e293b;align-self:flex-start;border-radius:10px 10px 10px 3px}
+.cin-row{padding:6px 14px 14px;display:flex;gap:5px}
+.cin{flex:1;padding:7px 11px;background:#f8fafc;border:0.5px solid #cbd5e1;border-radius:20px;font-size:11px;color:#1e293b;outline:none}
+.cin:focus{border-color:#5b3ff8}
+.csend{width:30px;height:30px;border-radius:50%;background:#5b3ff8;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* DASHBOARD */
+.dash-hdr{background:#1A1035;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.dash-title{font-size:15px;font-weight:500;color:white}
+.dash-back{font-size:11px;color:#AFA9EC;cursor:pointer;background:none;border:none;display:flex;align-items:center;gap:4px}
+.dash-body{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;min-height:0}
+.dsec-t{font-size:10px;font-weight:500;color:#64748B;text-transform:uppercase;letter-spacing:0.05em}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-card{background:#f8fafc;border-radius:12px;padding:12px 13px}
+.stat-lbl{font-size:10px;color:#64748B;margin-bottom:3px}
+.stat-num{font-size:26px;font-weight:500;color:#1e293b;line-height:1.1}
+.stat-sub{font-size:10px;color:#64748B;margin-top:2px}
+.stat-delta{display:inline-block;font-size:10px;font-weight:500;border-radius:5px;padding:1px 6px;margin-top:3px}
+.rank-card{background:#1A1035;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;flex-shrink:0;max-height:520px;overflow-y:auto}
+.rc-top{display:flex;align-items:flex-start;justify-content:space-between}
+.rc-label{font-size:10px;color:#AFA9EC;margin-bottom:4px}
+.rc-num{font-size:30px;font-weight:500;color:white;line-height:1}
+.rc-sub{font-size:11px;color:#AFA9EC;margin-top:2px}
+.rc-badge{font-size:11px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:20px;padding:4px 10px;white-space:nowrap;align-self:flex-start}
+.rank-bar-bg{height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+.rank-bar-fill{height:100%;border-radius:4px;background:#5b3ff8;width:78%}
+.rank-factors{display:flex;flex-direction:column;gap:7px}
+.rf-row{display:flex;align-items:center;gap:8px}
+.rf-name{font-size:10px;width:110px;flex-shrink:0;color:#AFA9EC}
+.rf-bar-bg{flex:1;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden}
+.rf-bar-fill{height:100%;border-radius:2px}
+.rf-pct{font-size:10px;font-weight:500;width:26px;text-align:right;flex-shrink:0;color:#AFA9EC}
+.rc-cta{font-size:10px;font-weight:500;color:#AFA9EC;cursor:pointer;text-align:center;padding:4px 0;border-top:0.5px solid rgba(255,255,255,0.1)}
+
+/* JOB MATCHES CARD */
+.jobs-card{border-radius:12px;border:0.5px solid #e2e8f0;flex-shrink:0}
+.jobs-top{padding:13px 14px;background:#f8fafc;border-radius:12px 12px 0 0}
+.jobs-top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.jobs-lbl{font-size:10px;color:#64748B}
+.view-toggle{display:flex;gap:0;border:0.5px solid #cbd5e1;border-radius:8px;overflow:hidden}
+.vtbtn{font-size:10px;font-weight:500;padding:3px 9px;border:none;cursor:pointer;transition:all 0.15s;background:#f1f5f9;color:#64748B}
+.vtbtn.on{background:#5b3ff8;color:white}
+.jobs-num{font-size:30px;font-weight:500;color:#1e293b;line-height:1}
+.jobs-sub{font-size:11px;color:#64748B;margin-top:2px}
+.jobs-bar-bg{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;margin-top:10px}
+.jobs-bar-fill{height:100%;background:#5b3ff8;border-radius:3px;width:62%}
+.jobs-list-view{display:block;border-top:0.5px solid #e2e8f0;max-height:200px;overflow-y:auto}
+.job-row{display:flex;align-items:center;gap:9px;padding:9px 14px;border-bottom:0.5px solid #e2e8f0;cursor:pointer;transition:background 0.15s;min-height:44px;background:white}
+.job-row:hover{background:#f8fafc}
+.job-co-dot{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:500}
+.job-title{font-size:11px;font-weight:500;color:#1e293b;flex:1}
+.job-pay{font-size:10px;color:#64748B;margin-top:1px}
+.job-dist{font-size:9px;color:#64748B;white-space:nowrap}
+.job-match{font-size:9px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:5px;padding:2px 6px;white-space:nowrap}
+.jobs-map-view{height:180px;background:#e8f0e8;position:relative;overflow:hidden;border-top:0.5px solid #e2e8f0;border-radius:0}
+.map-bg{width:100%;height:100%;background:#e8eedc;position:relative}
+.map-grid{position:absolute;inset:0;opacity:0.3}
+.map-pin{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:pointer;transform:translate(-50%,-100%)}
+.map-pin-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;border:2px solid white;transition:transform 0.15s}
+.map-pin-dot:hover{transform:scale(1.15)}
+.map-pin-tail{width:2px;height:6px;border-radius:1px}
+.map-you{position:absolute;transform:translate(-50%,-50%)}
+.map-you-dot{width:14px;height:14px;border-radius:50%;background:#5b3ff8;border:2px solid white}
+.map-you-ring{position:absolute;inset:-5px;border-radius:50%;border:1.5px solid rgba(91,63,248,0.3)}
+.map-label{font-size:9px;font-weight:500;color:#3C3489;margin-top:2px;white-space:nowrap;background:white;border-radius:4px;padding:1px 5px;border:0.5px solid #AFA9EC}
+.map-tooltip{position:absolute;background:white;border-radius:8px;border:0.5px solid #e2e8f0;padding:6px 9px;font-size:10px;font-weight:500;color:#1e293b;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s;z-index:10}
+.map-streets{position:absolute;inset:0;opacity:0.15}
+.unlock-hdr{padding:8px 14px 4px;font-size:10px;font-weight:500;color:#64748B;text-transform:uppercase;letter-spacing:0.04em;border-top:0.5px solid #e2e8f0}
+.unlock-list{padding:0 14px 10px;display:flex;flex-direction:column;gap:7px}
+.unlock-item{display:flex;align-items:center;gap:7px}
+.unlock-lbl{font-size:11px;color:#1e293b;flex:1}
+.unlock-badge{font-size:10px;font-weight:500;background:#EEEDFE;color:#3C3489;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.unlock-btn{font-size:10px;font-weight:500;padding:4px 10px;border-radius:8px;background:#5b3ff8;color:white;border:none;cursor:pointer;white-space:nowrap;transition:background 0.15s}
+.unlock-wrap{display:flex;flex-direction:column}
+.unlock-skip{font-size:10px;color:#94a3b8;background:none;border:none;cursor:pointer;text-align:left;padding:1px 0 5px;text-decoration:underline;text-decoration-color:rgba(148,163,184,0.35);transition:color 0.15s}
+.unlock-skip:hover{color:#64748B}
+.unlock-expand{background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:9px;padding:10px 12px;margin-bottom:2px;display:none}
+.ux-title{font-size:11px;font-weight:500;color:#1e293b;margin-bottom:3px}
+.ux-detail{font-size:10px;color:#64748B;line-height:1.6;margin-bottom:9px}
+.ux-actions{display:flex;gap:6px}
+.ux-get{font-size:10px;font-weight:500;padding:5px 11px;border-radius:8px;background:#5b3ff8;color:white;border:none;cursor:pointer}
+.ux-dismiss{font-size:10px;font-weight:500;padding:5px 11px;border-radius:8px;background:white;color:#64748B;border:0.5px solid #cbd5e1;cursor:pointer}
+.ddivider{height:0.5px;background:#e2e8f0}
+.activity-list{display:flex;flex-direction:column;gap:5px}
+.act-row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:#f8fafc;border-radius:8px}
+.act-l{display:flex;align-items:center;gap:7px}
+.act-ico{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.act-txt{font-size:11px;color:#1e293b}
+.act-time{font-size:10px;color:#64748B}
+
+/* BROWSE PROFILES */
+.browse-hdr{display:flex;align-items:center;justify-content:space-between}
+.browse-filter{display:flex;gap:4px}
+.bfbtn{font-size:10px;font-weight:500;padding:3px 8px;border-radius:8px;border:0.5px solid #cbd5e1;background:white;color:#64748B;cursor:pointer;transition:all 0.15s}
+.bfbtn.on{background:#5b3ff8;color:white;border-color:#5b3ff8}
+.profile-cards{display:flex;flex-direction:column;gap:7px}
+.profile-card{background:#f8fafc;border-radius:12px;border:0.5px solid #e2e8f0;padding:11px 13px;cursor:pointer;transition:all 0.15s}
+.profile-card:hover{border-color:#5b3ff8;background:#EEEDFE}
+.pc-top{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.pc-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.pc-name{font-size:12px;font-weight:500;color:#1e293b}
+.pc-role{font-size:10px;color:#64748B;margin-top:1px}
+.pc-rank{font-size:10px;font-weight:500;border-radius:20px;padding:3px 8px;margin-left:auto;white-space:nowrap;flex-shrink:0}
+.pc-skills{display:flex;gap:4px;flex-wrap:wrap}
+.pc-sk{font-size:10px;padding:2px 7px;border-radius:20px;background:white;color:#64748B;border:0.5px solid #e2e8f0}
+.pc-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.pc-avail{font-size:10px;color:#27500A;display:flex;align-items:center;gap:3px}
+.pc-dot{width:5px;height:5px;border-radius:50%;background:#3B6D11}
+.pc-view{font-size:10px;font-weight:500;color:#5b3ff8}
+
+.profile-card-dark{background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:9px 11px;cursor:pointer;transition:background 0.15s}
+.profile-card-dark:hover{background:rgba(255,255,255,0.1)}
+.pcd-top{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.pcd-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0}
+.pcd-name{font-size:11px;font-weight:500;color:white}
+.pcd-role{font-size:10px;color:#AFA9EC;margin-top:1px}
+.pcd-rank{font-size:9px;font-weight:500;border-radius:20px;padding:2px 7px;white-space:nowrap;flex-shrink:0}
+.pcd-skills{display:flex;gap:4px;flex-wrap:wrap}
+.pcd-sk{font-size:9px;padding:2px 6px;border-radius:20px;background:rgba(255,255,255,0.1);color:#AFA9EC}
+.map-you-label{background:white;border:0.5px solid #e2e8f0;border-radius:6px;padding:2px 7px;font-size:10px;font-weight:500;color:#3C3489;box-shadow:none}
+.job-popup .leaflet-popup-content-wrapper{border-radius:10px;border:0.5px solid #e2e8f0;box-shadow:0 4px 16px rgba(0,0,0,0.12)}
+.job-popup .leaflet-popup-tip{display:none}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<div class="scene">
+  <div class="state-bar">
+    <span class="state-lbl">View as:</span>
+    <button class="sbtn on" id="btn-visitor" onclick="setState('visitor')">Visitor</button>
+    <button class="sbtn" id="btn-owner" onclick="setState('owner')">Owner — viewing</button>
+    <button class="sbtn" id="btn-dash" onclick="setState('dash')">Dashboard</button>
+  </div>
+
+  <div class="phone">
+    <div class="chrome">
+      <div class="cdots">
+        <div class="cdot" style="background:#E24B4A"></div>
+        <div class="cdot" style="background:#EF9F27"></div>
+        <div class="cdot" style="background:#639922"></div>
+      </div>
+      <div class="curl">snagajob.com/jordan-d</div>
+    </div>
+
+    <!-- VISITOR -->
+    <div class="pg active" id="pg-visitor">
+      <div class="vbanner">
+        <div class="vb-text"><strong>Is this you?</strong> Sign in to claim and edit this page.</div>
+        <div class="vb-btns">
+          <button class="vbbtn" style="background:white;color:#3C3489;border:0.5px solid #AFA9EC" onclick="setState('owner')">Sign in</button>
+          <button class="vbbtn" style="background:#5b3ff8;color:white" onclick="setState('owner')">Sign up</button>
+        </div>
+      </div>
+      <div class="pscroll">
+        <div class="hero-section">
+          <div class="hero-top">
+            <div class="av">JD<div class="av-ring"></div></div>
+            <div class="hero-info">
+              <div class="pname">Jordan Dasilva</div>
+              <div class="phl">Student · Toronto, ON</div>
+              <div class="ploc"><svg width="9" height="9" viewBox="0 0 14 14" fill="none" stroke="#64748B" stroke-width="1.3"><path d="M7 1a4 4 0 0 1 4 4c0 3-4 8-4 8S3 8 3 5a4 4 0 0 1 4-4z"/><circle cx="7" cy="5" r="1.5"/></svg> 1.2 km from downtown</div>
+              <div class="avail-pill" style="background:#EAF3DE;border:0.5px solid #97C459">
+                <div class="avail-dot" style="background:#3B6D11"></div>
+                <span style="color:#27500A;font-size:10px;font-weight:500">Available now · can start this week</span>
+              </div>
+            </div>
+          </div>
+          <div class="badges-row">
+            <div class="pbadge" style="background:#EEEDFE;color:#3C3489">Natural communicator</div>
+            <div class="pbadge" style="background:#E1F5EE;color:#085041">Team-first</div>
+            <div class="pbadge" style="background:#FAEEDA;color:#633806">Fast learner</div>
+            <div class="pbadge" style="background:#E6F1FB;color:#0C447C">Community-driven</div>
+          </div>
+        </div>
+
+        <!-- VIDEO with static image -->
+        <div class="video-section">
+          <div class="sec-t">About me</div>
+          <div class="video-player" id="vplayer" onclick="toggleVideo()">
+            <div class="video-thumb" id="vthumb">
+              <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=300&fit=crop&crop=face" alt="Jordan Dasilva profile video thumbnail">
+              <div class="video-overlay">
+                <div class="play-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="white"><polygon points="5,3 14,8 5,13"/></svg></div>
+                <div class="video-label">Watch Jordan's intro · 0:42</div>
+              </div>
+            </div>
+            <div class="video-playing-overlay" id="vplaying">
+              <svg width="32" height="32" viewBox="0 0 36 36" style="margin-bottom:6px"><rect x="6" y="6" width="7" height="24" rx="2" fill="#5b3ff8"/><rect x="23" y="6" width="7" height="24" rx="2" fill="#5b3ff8"/></svg>
+              <p style="color:#AFA9EC;font-size:11px;text-align:center;line-height:1.6">"Hey! I'm Jordan. I love working with people and I'm known for showing up early. I was student council treasurer, volunteered at Scott Mission, and play competitive basketball. Ready to bring that same energy to my first job."</p>
+              <div style="font-size:9px;color:#534AB7;margin-top:4px">Tap to pause</div>
+            </div>
+            <div class="video-meta"><div class="vm-name">Hi, I'm Jordan — here's a bit about me</div><div class="vm-dur">0:42</div></div>
+          </div>
+        </div>
+
+        <div class="psection"><div style="font-size:12px;color:#475569;line-height:1.65;padding:9px 11px;background:#f8fafc;border-left:3px solid #5b3ff8;border-radius:0 9px 9px 0">Motivated student with proven leadership and community service experience. Raised $4,200 for school sports equipment as council treasurer, coordinated 6 volunteers at Scott Mission Food Bank, and captained my basketball team for 3 seasons. I bring reliability, initiative, and a team-first mindset to every role.</div></div>
+
+        <div class="psection">
+          <div class="sec-t">Career journey</div>
+          <div class="timeline">
+            <div class="tl-line"></div>
+            <div class="tl-item"><div class="tl-dot" style="background:#5b3ff8"></div><div><div class="tl-year">2023 – present</div><div class="tl-title">Student council treasurer</div><div class="tl-sub">Westview Secondary School</div><div style="font-size:10px;color:#64748B;margin-top:3px;line-height:1.5">Managed a $12,000 annual budget · organised 8 school events · led a team of 14 representatives · raised $4,200 for new sports equipment through a school-wide fundraiser</div></div></div>
+            <div class="tl-item"><div class="tl-dot" style="background:#1D9E75"></div><div><div class="tl-year">Summer 2023 · 3 months</div><div class="tl-title">Food bank volunteer</div><div class="tl-sub">Scott Mission · Toronto</div><div style="font-size:10px;color:#64748B;margin-top:3px;line-height:1.5">Served 80+ community members per shift · coordinated a team of 6 volunteers · managed food distribution logistics · maintained hygiene and safety standards</div></div></div>
+            <div class="tl-item"><div class="tl-dot" style="background:#EF9F27"></div><div><div class="tl-year">2021 – present · 4 seasons</div><div class="tl-title">Point guard · school basketball team</div><div class="tl-sub">Westview competitive league</div><div style="font-size:10px;color:#64748B;margin-top:3px;line-height:1.5">Team captain in final season · led team to regional semi-finals · responsible for pre-game communication and play-calling under pressure</div></div></div>
+            <div class="tl-item"><div class="tl-dot" style="background:#AFA9EC"></div><div><div class="tl-year">Now</div><div class="tl-title" style="color:#5b3ff8">Open to first job opportunities</div><div class="tl-sub">Part-time · evenings & weekends · starting immediately</div></div></div>
+          </div>
+        </div>
+
+        <div class="psection" style="padding-top:14px">
+          <div class="sec-t">Certifications</div>
+          <div class="cert-item"><div class="cert-ico" style="background:#EAF3DE"><svg width="13" height="13" viewBox="0 0 18 18" fill="none" stroke="#27500A" stroke-width="1.5"><path d="M9 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg></div><div style="flex:1"><div class="cert-name">Food handler certification</div><div class="cert-issuer">Ontario Food Safety · valid until Dec 2025</div></div><div class="cert-status" style="background:#EAF3DE;color:#27500A">Current</div><div class="cert-view" onclick="this.textContent='Opening ✓';setTimeout(()=>this.textContent='View',1500)">View</div></div>
+          <div class="cert-item"><div class="cert-ico" style="background:#E6F1FB"><svg width="13" height="13" viewBox="0 0 18 18" fill="none" stroke="#0C447C" stroke-width="1.5"><path d="M9 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg></div><div style="flex:1"><div class="cert-name">First aid & CPR — level C</div><div class="cert-issuer">Red Cross Canada · valid until Mar 2026</div></div><div class="cert-status" style="background:#EAF3DE;color:#27500A">Current</div><div class="cert-view" onclick="this.textContent='Opening ✓';setTimeout(()=>this.textContent='View',1500)">View</div></div>
+        </div>
+
+        <div class="psection" style="padding-top:14px">
+          <div class="sec-t">Skills</div>
+          <div class="sk-wrap"><span class="sk">Teamwork</span><span class="sk">Communication</span><span class="sk">Customer service</span><span class="sk">Event coordination</span><span class="sk">Food handling</span><span class="sk">Cash handling</span><span class="sk lang">English (fluent)</span><span class="sk lang">Portuguese (conversational)</span></div>
+        </div>
+
+        <div class="psection" style="padding-top:14px">
+          <div class="sec-t">Recommendations</div>
+          <div class="rec-item"><div class="rec-top"><div class="rec-av" style="background:#EEEDFE;color:#3C3489">MS</div><div><div class="rec-name">Maria Santos</div><div class="rec-role">Volunteer coordinator · Scott Mission</div></div><div class="rec-rel" style="background:#E1F5EE;color:#085041">Supervisor</div></div><div class="rec-body">"Jordan was one of our most dependable volunteers. Always early, always positive, and other volunteers naturally looked to them for direction. I'd hire Jordan without hesitation."</div><span class="rec-tag">Re: Scott Mission volunteer role</span></div>
+          <div class="rec-item"><div class="rec-top"><div class="rec-av" style="background:#FAEEDA;color:#633806">CT</div><div><div class="rec-name">Coach Thompson</div><div class="rec-role">Basketball coach · Westview Secondary</div></div><div class="rec-rel" style="background:#EEEDFE;color:#3C3489">Coach</div></div><div class="rec-body">"On the court Jordan's a leader — calm under pressure, communicates clearly, picks people up. Those are qualities employers should know about."</div><span class="rec-tag">Re: Basketball team · point guard</span></div>
+        </div>
+
+        <div class="psection" style="padding-top:14px">
+          <div class="sec-t">Work preferences</div>
+          <div class="pref-row"><span class="prefl">Hours</span><span class="prefv">Part-time · 15–25 hrs/week</span></div>
+          <div class="pref-row"><span class="prefl">Schedule</span><span class="prefv">Evenings & weekends</span></div>
+          <div class="pref-row"><span class="prefl">Max commute</span><span class="prefv">Within 5 km</span></div>
+          <div class="pref-row"><span class="prefl">Looking for</span><span class="prefv">Team environment · growth</span></div>
+        </div>
+
+        <div class="profile-footer">
+          <div class="vrow"><span class="vbadge"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#3C3489" stroke-width="1.8"><polyline points="2,6 5,9 10,3"/></svg> Verified by Snagajob</span><button class="qr-btn" onclick="this.innerHTML='<svg width=&quot;10&quot; height=&quot;10&quot; viewBox=&quot;0 0 12 12&quot; fill=&quot;none&quot; stroke=&quot;#5b3ff8&quot; stroke-width=&quot;1.8&quot;><polyline points=&quot;2,6 5,9 10,3&quot;/></svg> Copied';setTimeout(()=>this.textContent='QR code',1500)">QR code</button></div>
+          <div class="export-row">
+            <button class="exbtn" style="background:#f1f5f9;color:#64748B;border:0.5px solid #cbd5e1" onclick="this.textContent='Downloading ✓';setTimeout(()=>this.textContent='Download PDF',1500)">Download PDF</button>
+            <button class="exbtn" style="background:#1A1035;color:white" onclick="this.textContent='Downloading ✓';setTimeout(()=>this.textContent='Download .md',1500)">Download .md</button>
+          </div>
+          <div style="height:4px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OWNER VIEWING -->
+    <div class="pg" id="pg-owner">
+      <div class="obar">
+        <div class="obar-l"><div class="obar-logo">snagajob</div><div class="obar-badge" style="background:rgba(91,63,248,0.4);color:#AFA9EC">Your page</div></div>
+        <div class="obar-r">
+          <button class="obtn obtn-ghost" onclick="setState('dash')">Dashboard</button>
+          <button class="obtn obtn-ghost">Edit</button>
+          <button class="obtn obtn-purple" onclick="openAI()">AI edit</button>
+        </div>
+      </div>
+      <div class="rank-nudge" style="margin-top:10px">
+        <div style="display:flex;flex-direction:column;gap:3px;flex:1"><div style="font-size:11px;font-weight:500;color:#3C3489">Top 22% in Toronto</div><div class="rn-bar-bg"><div class="rn-bar-fill"></div></div><div style="font-size:10px;color:#534AB7">Add 2 things to reach top 10%</div></div>
+        <div style="font-size:10px;font-weight:500;color:#5b3ff8;cursor:pointer;white-space:nowrap" onclick="setState('dash')">See full ranking →</div>
+      </div>
+      <div class="pscroll" style="margin-top:10px">
+        <div class="hero-section">
+          <div class="hero-top"><div class="av">JD<div class="av-ring"></div></div><div class="hero-info"><div class="pname">Jordan Dasilva</div><div class="phl">Student · Toronto, ON</div><div class="ploc"><svg width="9" height="9" viewBox="0 0 14 14" fill="none" stroke="#64748B" stroke-width="1.3"><path d="M7 1a4 4 0 0 1 4 4c0 3-4 8-4 8S3 8 3 5a4 4 0 0 1 4-4z"/><circle cx="7" cy="5" r="1.5"/></svg> 1.2 km from downtown</div><div class="avail-pill" style="background:#EAF3DE;border:0.5px solid #97C459"><div class="avail-dot" style="background:#3B6D11"></div><span style="color:#27500A;font-size:10px;font-weight:500">Available now · can start this week</span></div></div></div>
+          <div class="badges-row"><div class="pbadge" style="background:#EEEDFE;color:#3C3489">Natural communicator</div><div class="pbadge" style="background:#E1F5EE;color:#085041">Team-first</div><div class="pbadge" style="background:#FAEEDA;color:#633806">Fast learner</div></div>
+        </div>
+        <div class="video-section">
+          <div class="sec-t">About me</div>
+          <div class="video-player" onclick="this.style.opacity='0.8'">
+            <div class="video-thumb">
+              <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=300&fit=crop&crop=face" alt="Jordan profile video">
+              <div class="video-overlay"><div class="play-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="white"><polygon points="5,3 14,8 5,13"/></svg></div><div class="video-label">0:42</div></div>
+            </div>
+            <div class="video-meta"><div class="vm-name">Hi, I'm Jordan</div><div class="vm-dur">0:42 · Re-record</div></div>
+          </div>
+        </div>
+        <div class="psection"><div style="font-size:12px;color:#475569;line-height:1.65;padding:9px 11px;background:#f8fafc;border-left:3px solid #5b3ff8;border-radius:0 9px 9px 0">Motivated student with proven leadership and community service experience. Raised $4,200 for school sports equipment as council treasurer, coordinated 6 volunteers at Scott Mission Food Bank, and captained my basketball team for 3 seasons. I bring reliability, initiative, and a team-first mindset to every role.</div></div>
+
+        <div class="psection" style="padding-top:14px">
+          <div class="sec-t">Career journey</div>
+          <div class="timeline">
+            <div class="tl-line"></div>
+            <div class="tl-item"><div class="tl-dot" style="background:#5b3ff8"></div><div><div class="tl-year">2023 – present</div><div class="tl-title">Student council treasurer</div><div class="tl-sub">Westview Secondary School</div><div style="font-size:10px;color:#64748B;margin-top:3px;line-height:1.5">Managed a $12,000 annual budget · organised 8 school events · led a team of 14 representatives · raised $4,200 for new sports equipment through a school-wide fundraiser</div></div></div>
+            <div class="tl-item"><div class="tl-dot" style="background:#1D9E75"></div><div><div class="tl-year">Summer 2023 · 3 months</div><div class="tl-title">Food bank volunteer</div><div class="tl-sub">Scott Mission · Toronto</div><div style="font-size:10px;color:#64748B;margin-top:3px;line-height:1.5">Served 80+ community members per shift · coordinated a team of 6 volunteers · managed food distribution logistics · maintained hygiene and safety standards</div></div></div>
+            <div class="tl-item"><div class="tl-dot" style="background:#EF9F27"></div><div><div class="tl-year">2021 – present · 4 seasons</div><div class="tl-title">Point guard · school basketball team</div><div class="tl-sub">Westview competitive league</div><div style="font-size:10px;color:#64748B;margin-top:3px;line-height:1.5">Team captain in final season · led team to regional semi-finals · responsible for pre-game communication and play-calling under pressure</div></div></div>
+            <div class="tl-item"><div class="tl-dot" style="background:#AFA9EC"></div><div><div class="tl-year">Now</div><div class="tl-title" style="color:#5b3ff8">Open to first job opportunities</div><div class="tl-sub">Part-time · evenings & weekends · starting immediately</div></div></div>
+          </div>
+        </div>
+
+        <div class="psection" style="padding-top:14px">
+          <div class="sec-t">Skills</div>
+          <div class="sk-wrap"><span class="sk">Teamwork</span><span class="sk">Communication</span><span class="sk">Customer service</span><span class="sk">Event coordination</span><span class="sk">Food handling</span><span class="sk">Cash handling</span><span class="sk lang">English (fluent)</span><span class="sk lang">Portuguese (conversational)</span></div>
+        </div>
+
+        <div class="psection" style="padding-top:12px"><div class="sec-t">Certifications</div><div class="cert-item"><div class="cert-ico" style="background:#EAF3DE"><svg width="13" height="13" viewBox="0 0 18 18" fill="none" stroke="#27500A" stroke-width="1.5"><path d="M9 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg></div><div style="flex:1"><div class="cert-name">Food handler certification</div><div class="cert-issuer">Ontario Food Safety · valid until Dec 2025</div></div><div class="cert-status" style="background:#EAF3DE;color:#27500A">Current</div><div class="cert-view">View</div></div><div class="cert-item" style="border:1.5px dashed #cbd5e1;background:transparent;cursor:pointer"><div class="cert-ico" style="background:#f1f5f9"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#64748B" stroke-width="1.5"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg></div><div style="flex:1"><div style="font-size:11px;color:#64748B">Add a certification</div><div style="font-size:10px;color:#94a3b8">Upload PDF · employers can verify it</div></div></div></div>
+        <div class="psection" style="padding-top:12px"><div class="sec-t">Recommendations</div><div class="rec-item"><div class="rec-top"><div class="rec-av" style="background:#EEEDFE;color:#3C3489">MS</div><div><div class="rec-name">Maria Santos</div><div class="rec-role">Volunteer coordinator · Scott Mission</div></div><div class="rec-rel" style="background:#E1F5EE;color:#085041">Supervisor</div></div><div class="rec-body">"Jordan was one of our most dependable volunteers. Always early, always positive."</div><span class="rec-tag">Re: Scott Mission volunteer role</span></div><div class="cert-item" style="border:1.5px dashed #cbd5e1;background:transparent;cursor:pointer;margin-top:4px"><div class="cert-ico" style="background:#f1f5f9"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#64748B" stroke-width="1.5"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg></div><div style="flex:1"><div style="font-size:11px;color:#64748B">Request a recommendation</div><div style="font-size:10px;color:#94a3b8">Send a link to a manager or teammate</div></div></div></div>
+        <div class="profile-footer" style="padding-top:14px">
+          <div class="vrow"><span class="vbadge"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#3C3489" stroke-width="1.8"><polyline points="2,6 5,9 10,3"/></svg> Verified by Snagajob</span><span style="font-size:9px;color:#64748B">Updated just now</span></div>
+          <div class="export-row">
+            <button class="exbtn" style="background:#5b3ff8;color:white" onclick="this.textContent='Copied ✓';setTimeout(()=>this.textContent='Copy link',1500)">Copy link</button>
+            <button class="exbtn" style="background:#f1f5f9;color:#64748B;border:0.5px solid #cbd5e1">Download PDF</button>
+            <button class="exbtn" style="background:#1A1035;color:white">Download .md</button>
+          </div>
+          <div style="height:6px"></div>
+        </div>
+      </div>
+      <!-- AI EDIT FIRST-TIME CALLOUT -->
+      <div id="ai-callout" style="margin:0 14px 10px;background:linear-gradient(135deg,#5b3ff8,#3C3489);border-radius:12px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;flex-shrink:0" onclick="dismissCallout()">
+        <div style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.6"><path d="M14 10a2 2 0 0 1-2 2H4l-3 3V3a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:500;color:white;margin-bottom:3px">Try AI edit ✨</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.75);line-height:1.5">Ask the AI to rewrite your bio, tailor your profile for a specific role, or add missing skills — changes appear live on your page.</div>
+        </div>
+        <div style="font-size:16px;color:rgba(255,255,255,0.5);cursor:pointer;padding:0 2px;flex-shrink:0" onclick="event.stopPropagation();dismissCallout()">×</div>
+      </div>
+      <div class="ai-drawer" id="ai-d">
+        <div class="dhandle" onclick="togAI()">
+          <div class="dh-l"><div class="dh-ico"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.6"><path d="M14 10a2 2 0 0 1-2 2H4l-3 3V3a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2z"/></svg></div><div><div class="dh-title">AI edit</div><div class="dh-sub">Customise your profile · changes appear live</div></div></div>
+          <button class="dtog" id="ai-tog"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#64748B" stroke-width="1.8"><polyline points="2,8 6,4 10,8"/></svg></button>
+        </div>
+        <div class="drawer-body" id="ai-body">
+          <div class="sugs"><div class="sug" onclick="sendAI(this,'Stronger bio')">Stronger bio</div><div class="sug" onclick="sendAI(this,'Request a recommendation')">Request rec</div><div class="sug" onclick="sendAI(this,'Update availability')">Update availability</div><div class="sug" onclick="sendAI(this,'Tailor for retail')">Tailor for retail</div></div>
+          <div class="msgs" id="ai-msgs"><div class="msg msg-a">Ask me anything — changes appear live above.</div></div>
+          <div class="cin-row"><input class="cin" id="ai-cin" placeholder="e.g. Make my bio stronger..." onkeydown="if(event.key==='Enter')sendChat()"><button class="csend" onclick="sendChat()"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2"><line x1="2" y1="8" x2="14" y2="8"/><polyline points="9,3 14,8 9,13"/></svg></button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="pg" id="pg-dash">
+      <div class="dash-hdr">
+        <div class="dash-title">Your dashboard</div>
+        <button class="dash-back" onclick="setState('owner')"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#AFA9EC" stroke-width="1.8"><polyline points="8,2 4,6 8,10"/></svg> Back to profile</button>
+      </div>
+      <div class="dash-body">
+
+        <!-- RANKING + AI COACH (merged) -->
+        <div style="background:#1A1035;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:0;flex-shrink:0">
+
+          <!-- SCORE ROW -->
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+            <div>
+              <div style="font-size:10px;color:#AFA9EC;text-transform:uppercase;letter-spacing:0.05em;font-weight:500;margin-bottom:4px">Candidate rank · Toronto</div>
+              <div style="font-size:34px;font-weight:500;color:white;line-height:1">Top 22%</div>
+              <div style="font-size:11px;color:#AFA9EC;margin-top:3px">of 4,200+ candidates in your area</div>
+            </div>
+            <div style="font-size:12px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:20px;padding:5px 11px;white-space:nowrap;align-self:flex-start">78 / 100</div>
+          </div>
+
+          <!-- SIGNAL CHECKLIST — binary, not percentage -->
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+            <div style="font-size:10px;color:#AFA9EC;text-transform:uppercase;letter-spacing:0.05em;font-weight:500;margin-bottom:2px">Profile signals</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:18px;height:18px;border-radius:50%;background:#1D9E75;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <span style="font-size:11px;color:white">About me video recorded</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:18px;height:18px;border-radius:50%;background:#1D9E75;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <span style="font-size:11px;color:white">Availability & schedule set</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:18px;height:18px;border-radius:50%;background:#1D9E75;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <span style="font-size:11px;color:white">Recommendation received</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px" id="cert-signal">
+              <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#AFA9EC" stroke-width="1.8"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg></div>
+              <span style="font-size:11px;color:#AFA9EC">No second certification yet</span>
+              <span style="font-size:9px;font-weight:500;background:rgba(91,63,248,0.4);color:#AFA9EC;border-radius:5px;padding:1px 6px;margin-left:auto;white-space:nowrap">+23 jobs</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px" id="achieve-signal">
+              <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#AFA9EC" stroke-width="1.8"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg></div>
+              <span style="font-size:11px;color:#AFA9EC">No specific achievements in bio</span>
+              <span style="font-size:9px;font-weight:500;background:rgba(91,63,248,0.4);color:#AFA9EC;border-radius:5px;padding:1px 6px;margin-left:auto;white-space:nowrap">+11 jobs</span>
+            </div>
+          </div>
+
+          <!-- DIVIDER -->
+          <div style="height:0.5px;background:rgba(255,255,255,0.1);margin-bottom:12px"></div>
+
+          <!-- AI COACH — single question shown, expandable -->
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+            <div style="width:22px;height:22px;border-radius:7px;background:rgba(91,63,248,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.6"><circle cx="7" cy="7" r="6"/><path d="M7 4.5v3.5M7 9.5v.5"/></svg>
+            </div>
+            <div style="font-size:11px;font-weight:500;color:white;flex:1">AI coach — 3 questions for you</div>
+            <div style="font-size:9px;color:#AFA9EC">Based on your profile</div>
+          </div>
+
+          <!-- ACTIVE QUESTION CARD -->
+          <div style="background:rgba(255,255,255,0.13);border:0.5px solid rgba(255,255,255,0.22);border-radius:11px;overflow:hidden" id="active-q-card">
+            <div style="padding:10px 12px">
+              <div style="font-size:9px;font-weight:500;color:#5b3ff8;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px">Question 1 of 3</div>
+              <div style="font-size:12px;font-weight:500;color:white;line-height:1.4;margin-bottom:4px" id="q-text">What's your proudest achievement at school?</div>
+              <div style="font-size:10px;color:#C8C4EC;line-height:1.5;margin-bottom:10px" id="q-reason">Your student council role is great — a specific achievement here makes your bio much stronger for employers.</div>
+              <!-- INPUT MODE TOGGLE -->
+              <div style="display:flex;gap:5px;margin-bottom:8px">
+                <button id="mode-text" onclick="setInputMode('text')" style="font-size:10px;font-weight:500;padding:4px 10px;border-radius:8px;background:#5b3ff8;color:white;border:none;cursor:pointer">Text</button>
+                <button id="mode-voice" onclick="setInputMode('voice')" style="font-size:10px;font-weight:500;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,0.1);color:#AFA9EC;border:0.5px solid rgba(255,255,255,0.15);cursor:pointer;display:flex;align-items:center;gap:4px"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="1" width="4" height="6" rx="2"/><path d="M2 6a5 5 0 0 0 8 0M6 9v2"/></svg>Voice</button>
+              </div>
+              <!-- TEXT INPUT -->
+              <div id="text-input-wrap" style="display:flex;gap:6px">
+                <input id="q-inp" style="flex:1;padding:7px 10px;background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.15);border-radius:8px;font-size:11px;color:white;outline:none" id="q-placeholder-display" placeholder="e.g. I organised a fundraiser that raised $4,000 for new sports equipment..." onclick="event.stopPropagation()">
+                <button onclick="submitAnswer()" style="font-size:10px;font-weight:500;padding:7px 11px;border-radius:8px;background:#5b3ff8;color:white;border:none;cursor:pointer;white-space:nowrap">Add</button>
+              </div>
+              <!-- VOICE INPUT -->
+              <div id="voice-input-wrap" style="display:none;flex-direction:column;align-items:center;gap:7px;padding:6px 0">
+                <button id="mic-btn" onclick="toggleMic()" style="width:44px;height:44px;border-radius:50%;background:#5b3ff8;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.6"><rect x="5" y="1" width="6" height="9" rx="3"/><path d="M2 8a6 6 0 0 0 12 0M8 14v-2"/></svg>
+                </button>
+                <div id="mic-status" style="font-size:10px;color:#AFA9EC">Tap to speak your answer</div>
+                <div id="voice-preview" style="font-size:11px;color:white;text-align:center;display:none;padding:4px 8px;background:rgba(255,255,255,0.08);border-radius:6px;width:100%"></div>
+                <button id="voice-submit" onclick="submitVoiceAnswer()" style="display:none;font-size:10px;font-weight:500;padding:6px 14px;border-radius:8px;background:#5b3ff8;color:white;border:none;cursor:pointer">Add to profile</button>
+              </div>
+            </div>
+            <!-- SUCCESS STATE (hidden) -->
+            <div id="q-success" style="display:none;padding:10px 12px;background:rgba(29,158,117,0.15);border-top:0.5px solid rgba(29,158,117,0.3)">
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:16px;height:16px;border-radius:50%;background:#1D9E75;display:flex;align-items:center;justify-content:center"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg></div><span style="font-size:11px;font-weight:500;color:#1D9E75">Added to your profile</span></div>
+              <div id="success-preview" style="font-size:10px;color:#AFA9EC;margin-top:4px;margin-left:22px"></div>
+            </div>
+          </div>
+
+          <!-- SEE ALL QUESTIONS toggle -->
+          <div style="margin-top:8px">
+            <button onclick="toggleAllQ()" id="see-all-btn" style="width:100%;padding:7px;border-radius:8px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);color:#AFA9EC;font-size:10px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
+              <svg id="see-all-ico" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="2,4 6,8 10,4"/></svg>
+              See all questions
+            </button>
+            <!-- ALL QUESTIONS LIST (hidden by default) -->
+            <div id="all-q-list" style="display:none;flex-direction:column;gap:5px;margin-top:7px" id="all-q-list">
+              <div onclick="selectQ(0)" id="qlist-0" style="padding:9px 11px;background:rgba(91,63,248,0.25);border:0.5px solid rgba(91,63,248,0.5);border-radius:9px;cursor:pointer">
+                <div style="font-size:9px;color:#AFA9EC;margin-bottom:2px">Currently answering</div>
+                <div style="font-size:11px;font-weight:500;color:white">What's your proudest achievement at school?</div>
+              </div>
+              <div onclick="selectQ(1)" id="qlist-1" style="padding:9px 11px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.1);border-radius:9px;cursor:pointer">
+                <div style="font-size:9px;color:#AFA9EC;margin-bottom:2px">Suggested · team signal</div>
+                <div style="font-size:11px;font-weight:500;color:white">How do you like working with teammates?</div>
+              </div>
+              <div onclick="selectQ(2)" id="qlist-2" style="padding:9px 11px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.1);border-radius:9px;cursor:pointer">
+                <div style="font-size:9px;color:#AFA9EC;margin-bottom:2px">Suggested · volunteer experience</div>
+                <div style="font-size:11px;font-weight:500;color:white">What did you learn from your food bank volunteering?</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BROWSE PROFILES -->
+          <div style="border-top:0.5px solid rgba(255,255,255,0.1);padding-top:12px;display:flex;flex-direction:column;gap:6px;margin-top:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-size:10px;color:#AFA9EC;text-transform:uppercase;letter-spacing:0.05em;font-weight:500">Profiles in your tier</div>
+              <div style="display:flex;gap:4px">
+                <button style="font-size:9px;font-weight:500;padding:3px 8px;border-radius:7px;border:0.5px solid rgba(255,255,255,0.2);background:rgba(91,63,248,0.5);color:white;cursor:pointer" id="bf-better" onclick="setFilter('better')">Above me</button>
+                <button style="font-size:9px;font-weight:500;padding:3px 8px;border-radius:7px;border:0.5px solid rgba(255,255,255,0.1);background:transparent;color:#AFA9EC;cursor:pointer" id="bf-similar" onclick="setFilter('similar')">Similar rank</button>
+              </div>
+            </div>
+            <div id="profile-cards" style="display:flex;flex-direction:column;gap:6px">
+              <div style="background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:9px 11px;cursor:pointer" onclick="setState('visitor')">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><div style="width:26px;height:26px;border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:#085041;flex-shrink:0">AK</div><div style="flex:1"><div style="font-size:11px;font-weight:500;color:white">Aisha Kamara</div><div style="font-size:10px;color:#AFA9EC">Retail · Etobicoke</div></div><div style="font-size:9px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:20px;padding:2px 7px">Top 8%</div></div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap"><span style="font-size:9px;padding:2px 6px;border-radius:10px;background:rgba(255,255,255,0.1);color:#AFA9EC">Customer service</span><span style="font-size:9px;padding:2px 6px;border-radius:10px;background:rgba(255,255,255,0.1);color:#AFA9EC">Food handler cert</span><span style="font-size:9px;padding:2px 6px;border-radius:10px;background:rgba(255,255,255,0.1);color:#AFA9EC">POS systems</span></div>
+                <div style="font-size:9px;color:#7F77DD;margin-top:5px;text-align:right">View profile →</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:9px 11px;cursor:pointer" onclick="setState('visitor')">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><div style="width:26px;height:26px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:#3C3489;flex-shrink:0">ML</div><div style="flex:1"><div style="font-size:11px;font-weight:500;color:white">Marcus Lee</div><div style="font-size:10px;color:#AFA9EC">Food service · Scarborough</div></div><div style="font-size:9px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:20px;padding:2px 7px">Top 14%</div></div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap"><span style="font-size:9px;padding:2px 6px;border-radius:10px;background:rgba(255,255,255,0.1);color:#AFA9EC">Food handling</span><span style="font-size:9px;padding:2px 6px;border-radius:10px;background:rgba(255,255,255,0.1);color:#AFA9EC">Team lead exp.</span><span style="font-size:9px;padding:2px 6px;border-radius:10px;background:rgba(255,255,255,0.1);color:#AFA9EC">CPR certified</span></div>
+                <div style="font-size:9px;color:#7F77DD;margin-top:5px;text-align:right">View profile →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ddivider"></div>
+
+        <!-- THIS WEEK STATS 2x2 -->
+        <div class="dsec-t">This week</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-lbl">Profile views</div>
+            <div class="stat-num">24</div>
+            <div class="stat-sub">All time: 142</div>
+            <span class="stat-delta" style="background:#EAF3DE;color:#27500A">+8 this week</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">PDF downloads</div>
+            <div class="stat-num">6</div>
+            <div class="stat-sub">All time: 31</div>
+            <span class="stat-delta" style="background:#EAF3DE;color:#27500A">+2 this week</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Video plays</div>
+            <div class="stat-num">11</div>
+            <div class="stat-sub" style="display:flex;align-items:center;gap:4px">
+              <span style="font-size:10px;color:#64748B">Completion</span>
+              <span style="font-size:10px;font-weight:500;color:#3B6D11">73%</span>
+            </div>
+            <span class="stat-delta" style="background:#EAF3DE;color:#27500A">+5 this week</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Link shares</div>
+            <div class="stat-num">11</div>
+            <div class="stat-sub">All time</div>
+            <span class="stat-delta" style="background:#EEEDFE;color:#3C3489">+3 this week</span>
+          </div>
+        </div>
+
+        <div class="ddivider"></div>
+
+        <!-- JOB MATCHES WITH MAP TOGGLE -->
+        <div class="dsec-t">Job matches</div>
+        <div class="jobs-card">
+          <div class="jobs-top">
+            <div class="jobs-top-row">
+              <div class="jobs-lbl">Jobs you can apply to right now</div>
+              <div class="view-toggle">
+                <button class="vtbtn on" id="vt-list" onclick="setJobView('list')">List</button>
+                <button class="vtbtn" id="vt-map" onclick="setJobView('map')">Map</button>
+              </div>
+            </div>
+            <div class="jobs-num">47</div>
+            <div class="jobs-sub">Based on your current profile</div>
+            <div class="jobs-bar-bg"><div class="jobs-bar-fill"></div></div>
+          </div>
+
+          <!-- LIST VIEW -->
+          <div class="jobs-list-view" id="jobs-list">
+            <div class="job-row"><div class="job-co-dot" style="background:#E6F1FB;color:#0C447C">T</div><div><div class="job-title">Team member · Target</div><div class="job-pay">$17–19/hr · Part-time</div></div><div style="text-align:right"><div class="job-match">91% match</div><div class="job-dist" style="margin-top:3px">0.8 km</div></div></div>
+            <div class="job-row"><div class="job-co-dot" style="background:#FCEBEB;color:#791F1F">S</div><div><div class="job-title">Cashier · Shoppers Drug Mart</div><div class="job-pay">$16–18/hr · Part-time</div></div><div style="text-align:right"><div class="job-match">87% match</div><div class="job-dist" style="margin-top:3px">1.1 km</div></div></div>
+            <div class="job-row"><div class="job-co-dot" style="background:#E1F5EE;color:#085041">SD</div><div><div class="job-title">Crew member · Second Cup</div><div class="job-pay">$16/hr · Evenings</div></div><div style="text-align:right"><div class="job-match">84% match</div><div class="job-dist" style="margin-top:3px">1.4 km</div></div></div>
+            <div class="job-row"><div class="job-co-dot" style="background:#FAEEDA;color:#633806">TH</div><div><div class="job-title">Customer service · Tim Hortons</div><div class="job-pay">$15.50/hr · Flexible</div></div><div style="text-align:right"><div class="job-match">79% match</div><div class="job-dist" style="margin-top:3px">2.1 km</div></div></div>
+          </div>
+
+          <!-- MAP VIEW -->
+          <div id="jobs-map" style="display:none;height:220px;position:relative;border-top:0.5px solid #e2e8f0">
+            <div id="leaflet-map" style="width:100%;height:100%"></div>
+            <div id="map-tip" style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:white;border-radius:8px;border:0.5px solid #e2e8f0;padding:5px 10px;font-size:10px;font-weight:500;color:#1e293b;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s;z-index:1000"></div>
+          </div>
+
+          <div class="unlock-hdr">Unlock more with these updates</div>
+          <div class="unlock-list" id="unlock-list">
+
+            <!-- CERT -->
+            <div class="unlock-wrap" id="uw-cert">
+              <div class="unlock-item">
+                <span class="unlock-lbl">Add a food handler cert</span>
+                <span class="unlock-badge">+23 jobs</span>
+                <button class="unlock-btn" onclick="this.textContent='Added ✓';this.style.background='#3B6D11'">Add</button>
+              </div>
+              <div class="unlock-expand" id="ux-cert">
+                <div class="ux-title">How to get a food handler cert</div>
+                <div class="ux-detail">Available online through Ontario Food Safety · ~$25 · 4-hour course · certificate valid 5 years · accepted by most Toronto-area employers.</div>
+                <div class="ux-actions">
+                  <button class="ux-get" onclick="this.textContent='Opening ✓'">Get it online →</button>
+                  <button class="ux-dismiss" onclick="dismissUnlock('uw-cert')">Dismiss</button>
+                </div>
+              </div>
+              <button class="unlock-skip" onclick="toggleUnlockExpand('ux-cert', this)">I don't have this</button>
+            </div>
+
+            <!-- REC -->
+            <div class="unlock-wrap" id="uw-rec">
+              <div class="unlock-item">
+                <span class="unlock-lbl">Get a 2nd recommendation</span>
+                <span class="unlock-badge">+18 jobs</span>
+                <button class="unlock-btn" onclick="this.textContent='Sent ✓';this.style.background='#3B6D11'">Request</button>
+              </div>
+              <div class="unlock-expand" id="ux-rec">
+                <div class="ux-title">Can't get one right now?</div>
+                <div class="ux-detail">Ask a teacher, coach, volunteer supervisor, or past employer — we'll send them a short link. It takes them under 2 minutes to complete.</div>
+                <div class="ux-actions">
+                  <button class="ux-get" onclick="this.textContent='Link copied ✓'">Copy request link</button>
+                  <button class="ux-dismiss" onclick="dismissUnlock('uw-rec')">Dismiss for now</button>
+                </div>
+              </div>
+              <button class="unlock-skip" onclick="toggleUnlockExpand('ux-rec', this)">I can't get one right now</button>
+            </div>
+
+            <!-- LANGUAGE -->
+            <div class="unlock-wrap" id="uw-lang">
+              <div class="unlock-item">
+                <span class="unlock-lbl">Add Portuguese to skills</span>
+                <span class="unlock-badge">+12 jobs</span>
+                <button class="unlock-btn" onclick="this.textContent='Added ✓';this.style.background='#3B6D11'">Add</button>
+              </div>
+              <div class="unlock-expand" id="ux-lang">
+                <div class="ux-title">Don't speak Portuguese?</div>
+                <div class="ux-detail">No problem — only add languages you actually speak. Dismiss this and we'll suggest something else that fits your profile.</div>
+                <div class="ux-actions">
+                  <button class="ux-dismiss" onclick="dismissUnlock('uw-lang')">Got it, suggest something else</button>
+                </div>
+              </div>
+              <button class="unlock-skip" onclick="toggleUnlockExpand('ux-lang', this)">I don't speak Portuguese</button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="ddivider"></div>
+
+        <!-- SKIP TO INTERVIEW -->
+        <div style="font-size:10px;font-weight:500;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;display:flex;align-items:center;gap:6px">
+          Skip the application
+          <span style="font-size:9px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:5px;padding:1px 6px;text-transform:none;letter-spacing:0">3 slots open now</span>
+        </div>
+        <div style="background:#f8fafc;border-radius:12px;border:0.5px solid #e2e8f0;overflow:hidden;flex-shrink:0">
+          <div style="padding:10px 13px;background:#EAF3DE;border-bottom:0.5px solid #97C459;display:flex;align-items:center;gap:7px">
+            <div style="width:26px;height:26px;border-radius:8px;background:#3B6D11;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.6"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:500;color:#1A3D0A">You qualify for direct scheduling</div>
+              <div style="font-size:10px;color:#3B6D11">Your profile clears the hiring bar — book an interview without applying first</div>
+            </div>
+          </div>
+          <!-- Interview job 1 -->
+          <div style="padding:10px 13px;border-bottom:0.5px solid #e2e8f0;display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#0C447C;flex-shrink:0">T</div>
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:500;color:#1e293b">Team member · Target</div>
+              <div style="font-size:10px;color:#64748B">Bloor St · $17–19/hr · Part-time</div>
+              <div style="display:flex;align-items:center;gap:5px;margin-top:3px">
+                <span style="font-size:9px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:5px;padding:1px 6px">91% match</span>
+                <span style="font-size:9px;color:#64748B">3 slots · Tue & Wed 9–11am</span>
+              </div>
+            </div>
+            <button onclick="bookInterview(this,'Target')" style="font-size:10px;font-weight:500;padding:6px 11px;border-radius:10px;background:#5b3ff8;color:white;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0">Book slot</button>
+          </div>
+          <!-- Interview job 2 -->
+          <div style="padding:10px 13px;border-bottom:0.5px solid #e2e8f0;display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#085041;flex-shrink:0">SC</div>
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:500;color:#1e293b">Crew member · Second Cup</div>
+              <div style="font-size:10px;color:#64748B">King St W · $16/hr · Evenings</div>
+              <div style="display:flex;align-items:center;gap:5px;margin-top:3px">
+                <span style="font-size:9px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:5px;padding:1px 6px">84% match</span>
+                <span style="font-size:9px;color:#64748B">2 slots · Thu 2–4pm</span>
+              </div>
+            </div>
+            <button onclick="bookInterview(this,'Second Cup')" style="font-size:10px;font-weight:500;padding:6px 11px;border-radius:10px;background:#5b3ff8;color:white;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0">Book slot</button>
+          </div>
+          <!-- Interview job 3 -->
+          <div style="padding:10px 13px;display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#FCEBEB;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#791F1F;flex-shrink:0">S</div>
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:500;color:#1e293b">Cashier · Shoppers Drug Mart</div>
+              <div style="font-size:10px;color:#64748B">Yonge St · $16–18/hr · Part-time</div>
+              <div style="display:flex;align-items:center;gap:5px;margin-top:3px">
+                <span style="font-size:9px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:5px;padding:1px 6px">87% match</span>
+                <span style="font-size:9px;color:#64748B">4 slots · Mon–Fri mornings</span>
+              </div>
+            </div>
+            <button onclick="bookInterview(this,'Shoppers')" style="font-size:10px;font-weight:500;padding:6px 11px;border-radius:10px;background:#5b3ff8;color:white;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0">Book slot</button>
+          </div>
+          <!-- Locked job — needs cert -->
+          <div style="padding:10px 13px;background:#fafafa;border-top:0.5px solid #e2e8f0;display:flex;align-items:center;gap:10px;opacity:0.7">
+            <div style="width:32px;height:32px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="4" y="7" width="8" height="7" rx="1"/><path d="M6 7V5a2 2 0 0 1 4 0v2"/></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:500;color:#94a3b8">Shift supervisor · Tim Hortons</div>
+              <div style="font-size:10px;color:#94a3b8">$19–21/hr · Full-time</div>
+              <div style="font-size:9px;color:#EF9F27;margin-top:3px;font-weight:500">Add food handler cert to unlock direct scheduling</div>
+            </div>
+            <button style="font-size:10px;font-weight:500;padding:6px 11px;border-radius:10px;background:#f1f5f9;color:#94a3b8;border:0.5px solid #e2e8f0;cursor:pointer;white-space:nowrap;flex-shrink:0">Locked</button>
+          </div>
+        </div>
+
+        <div class="ddivider"></div>
+        <div class="dsec-t">Recent activity</div>
+        <div class="activity-list">
+          <div class="act-row"><div class="act-l"><div class="act-ico" style="background:#E6F1FB"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#0C447C" stroke-width="1.5"><path d="M7 1a4 4 0 0 1 4 4c0 3-4 8-4 8S3 8 3 5a4 4 0 0 1 4-4z"/><circle cx="7" cy="5" r="1.5"/></svg></div><span class="act-txt">Profile viewed · Target hiring manager</span></div><span class="act-time">1h ago</span></div>
+          <div class="act-row"><div class="act-l"><div class="act-ico" style="background:#FAEEDA"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#633806" stroke-width="1.5"><polygon points="7,1 8.5,5 13,5 9.5,8 11,12 7,9.5 3,12 4.5,8 1,5 5.5,5"/></svg></div><span class="act-txt">About me video played · 3 times</span></div><span class="act-time">3h ago</span></div>
+          <div class="act-row"><div class="act-l"><div class="act-ico" style="background:#E1F5EE"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#085041" stroke-width="1.5"><path d="M7 1v9M4 7l3 3 3-3"/><path d="M1 12h12"/></svg></div><span class="act-txt">PDF downloaded · Shoppers Drug Mart</span></div><span class="act-time">Yesterday</span></div>
+          <div class="act-row"><div class="act-l"><div class="act-ico" style="background:#EEEDFE"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#3C3489" stroke-width="1.5"><path d="M11 4l-6 6M5 4h6v6"/></svg></div><span class="act-txt">Recommendation received · Maria S.</span></div><span class="act-time">2 days ago</span></div>
+        </div>
+        <div style="height:14px"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var aiOpen=false;
+var videoPlaying=false;
+var jobView='list';
+var profileFilter='better';
+var aiReplies=['Updated — changes are live on your profile.','Done! Scroll up to see what changed.','Applied. Your .md file reflects this too.','Got it — your career file is updated.'];
+var aiIdx=0;
+
+function setState(s){
+  ['visitor','owner','dash'].forEach(function(id){
+    document.getElementById('pg-'+id).classList.remove('active');
+    document.getElementById('btn-'+id).classList.remove('on');
+  });
+  document.getElementById('pg-'+s).classList.add('active');
+  document.getElementById('btn-'+s).classList.add('on');
+}
+
+function toggleVideo(){
+  videoPlaying=!videoPlaying;
+  document.getElementById('vthumb').style.display=videoPlaying?'none':'block';
+  var vp=document.getElementById('vplaying');
+  vp.style.display=videoPlaying?'flex':'none';
+  if(videoPlaying) vp.classList.add('active');
+  else vp.classList.remove('active');
+}
+
+function setJobView(v){
+  jobView=v;
+  document.getElementById('vt-list').classList.toggle('on',v==='list');
+  document.getElementById('vt-map').classList.toggle('on',v==='map');
+  document.getElementById('jobs-list').style.display=v==='list'?'flex':'none';
+  document.getElementById('jobs-map').style.display=v==='map'?'block':'none';
+}
+
+function showPin(label,el){
+  var tip=document.getElementById('map-tip');
+  var rect=el.getBoundingClientRect();
+  var mapRect=el.closest('.jobs-map-view').getBoundingClientRect();
+  tip.textContent=label;
+  var left=rect.left-mapRect.left+13;
+  var top=rect.top-mapRect.top-32;
+  if(left+tip.offsetWidth>320) left=left-tip.offsetWidth-10;
+  tip.style.left=Math.max(4,left)+'px';
+  tip.style.top=Math.max(4,top)+'px';
+  tip.style.opacity='1';
+  setTimeout(function(){tip.style.opacity='0';},2000);
+}
+
+function setFilter(f){
+  profileFilter=f;
+  var bBetter=document.getElementById('bf-better');
+  var bSim=document.getElementById('bf-similar');
+  if(bBetter){bBetter.style.background=f==='better'?'rgba(91,63,248,0.7)':'rgba(255,255,255,0.08)';bBetter.style.color=f==='better'?'white':'#AFA9EC';}
+  if(bSim){bSim.style.background=f==='similar'?'rgba(91,63,248,0.7)':'rgba(255,255,255,0.08)';bSim.style.color=f==='similar'?'white':'#AFA9EC';}
+  var cards=document.getElementById('profile-cards');
+  if(!cards) return;
+  if(f==='similar'){
+    cards.innerHTML='<div class="profile-card-dark" onclick="setState(\'visitor\')"><div class="pcd-top"><div class="pcd-av" style="background:rgba(91,63,248,0.3);color:#AFA9EC">JM</div><div style="flex:1"><div class="pcd-name">Jamie Morales</div><div class="pcd-role">Student · East York</div></div><div class="pcd-rank" style="background:#EEEDFE;color:#3C3489">Top 24%</div></div><div class="pcd-skills"><span class="pcd-sk">Customer service</span><span class="pcd-sk">No cert yet</span><span class="pcd-sk">1 rec</span></div></div><div class="profile-card-dark" onclick="setState(\'visitor\')"><div class="pcd-top"><div class="pcd-av" style="background:rgba(226,75,74,0.3);color:#F09595">RL</div><div style="flex:1"><div class="pcd-name">Riley Lam</div><div class="pcd-role">First job · Mississauga</div></div><div class="pcd-rank" style="background:#EEEDFE;color:#3C3489">Top 28%</div></div><div class="pcd-skills"><span class="pcd-sk">Communication</span><span class="pcd-sk">Volunteering</span><span class="pcd-sk">No video yet</span></div></div>';
+  } else {
+    cards.innerHTML='<div class="profile-card-dark" onclick="setState(\'visitor\')"><div class="pcd-top"><div class="pcd-av" style="background:rgba(14,110,86,0.4);color:#9FE1CB">AK</div><div style="flex:1"><div class="pcd-name">Aisha Kamara</div><div class="pcd-role">Retail · Etobicoke</div></div><div class="pcd-rank" style="background:#EAF3DE;color:#27500A">Top 8%</div></div><div class="pcd-skills"><span class="pcd-sk">Food handler cert</span><span class="pcd-sk">POS systems</span><span class="pcd-sk">2 recs</span></div></div><div class="profile-card-dark" onclick="setState(\'visitor\')"><div class="pcd-top"><div class="pcd-av" style="background:rgba(55,138,221,0.3);color:#85B7EB">ML</div><div style="flex:1"><div class="pcd-name">Marcus Lee</div><div class="pcd-role">Food service · Scarborough</div></div><div class="pcd-rank" style="background:#EAF3DE;color:#27500A">Top 14%</div></div><div class="pcd-skills"><span class="pcd-sk">CPR certified</span><span class="pcd-sk">Team lead exp</span><span class="pcd-sk">Intro video</span></div></div>';
+  }
+}
+
+function openAI(){
+  document.getElementById('ai-body').classList.add('open');
+  document.getElementById('ai-tog').innerHTML='<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#64748B" stroke-width="1.8"><polyline points="2,4 6,8 10,4"/></svg>';
+  aiOpen=true;
+}
+function togAI(){
+  aiOpen=!aiOpen;
+  document.getElementById('ai-body').classList.toggle('open',aiOpen);
+  document.getElementById('ai-tog').innerHTML=aiOpen?'<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#64748B" stroke-width="1.8"><polyline points="2,4 6,8 10,4"/></svg>':'<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#64748B" stroke-width="1.8"><polyline points="2,8 6,4 10,8"/></svg>';
+}
+function sendAI(el,text){
+  el.style.opacity='0.5';el.style.pointerEvents='none';
+  addMsg(text,'u');
+  setTimeout(function(){addMsg(aiReplies[aiIdx%aiReplies.length],'a');aiIdx++;},600);
+}
+function sendChat(){
+  var inp=document.getElementById('ai-cin');var v=inp.value.trim();if(!v)return;
+  addMsg(v,'u');inp.value='';
+  setTimeout(function(){addMsg(aiReplies[aiIdx%aiReplies.length],'a');aiIdx++;},700);
+}
+function addMsg(text,role){
+  var msgs=document.getElementById('ai-msgs');
+  var d=document.createElement('div');d.className='msg msg-'+role;d.textContent=text;
+  msgs.appendChild(d);msgs.scrollTop=9999;
+}
+
+
+// ── CALLOUT + INTERVIEW JS ───────────────────────────────────────────────
+function dismissCallout() {
+  var c = document.getElementById('ai-callout');
+  if (c) { c.style.transition = 'opacity 0.3s'; c.style.opacity = '0'; setTimeout(function(){ c.style.display = 'none'; openAI(); }, 300); }
+}
+
+function bookInterview(btn, employer) {
+  btn.textContent = 'Booked ✓';
+  btn.style.background = '#3B6D11';
+  btn.disabled = true;
+  // Show a confirmation toast
+  var toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:white;font-size:12px;font-weight:500;padding:10px 18px;border-radius:20px;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2)';
+  toast.textContent = '✓ Interview booked with ' + employer + ' — check your calendar';
+  document.body.appendChild(toast);
+  setTimeout(function(){ toast.style.opacity='0';toast.style.transition='opacity 0.4s'; setTimeout(function(){toast.remove()},400); }, 2500);
+}
+
+// ── AI COACH ──────────────────────────────────────────────────────────────
+var allQOpen = false;
+var micRecording = false;
+var currentQ = 0;
+var questions = [
+  { text: "What\'s your proudest achievement at school?", reason: "Your student council role is great — a specific achievement here makes your bio much stronger for employers." },
+  { text: "How do you like working with teammates?", reason: "Employers hiring for team roles look for this signal. Your basketball experience suggests you have a great answer." },
+  { text: "What did you learn from your food bank volunteering?", reason: "Your volunteer experience is strong but vague. A specific reflection makes employers take it much more seriously." }
+];
+var voiceTexts = [
+  "I raised $4,200 for new sports equipment by organising a school-wide fundraiser drive.",
+  "I like to check in often and step up when someone needs help — I learned that from captaining my basketball team.",
+  "I learned how to stay calm and kind even when things were hectic — serving 80+ people per session taught me real patience."
+];
+
+function setInputMode(mode) {
+  var textWrap = document.getElementById("text-input-wrap");
+  var voiceWrap = document.getElementById("voice-input-wrap");
+  var modeText = document.getElementById("mode-text");
+  var modeVoice = document.getElementById("mode-voice");
+  if (mode === "text") {
+    textWrap.style.display = "flex";
+    voiceWrap.style.display = "none";
+    modeText.style.background = "#5b3ff8"; modeText.style.color = "white"; modeText.style.border = "none";
+    modeVoice.style.background = "rgba(255,255,255,0.1)"; modeVoice.style.color = "#AFA9EC";
+  } else {
+    textWrap.style.display = "none";
+    voiceWrap.style.display = "flex";
+    modeText.style.background = "rgba(255,255,255,0.1)"; modeText.style.color = "#AFA9EC";
+    modeVoice.style.background = "#5b3ff8"; modeVoice.style.color = "white"; modeVoice.style.border = "none";
+  }
+}
+
+function toggleMic() {
+  micRecording = !micRecording;
+  var btn = document.getElementById("mic-btn");
+  var status = document.getElementById("mic-status");
+  var preview = document.getElementById("voice-preview");
+  var submitBtn = document.getElementById("voice-submit");
+  if (micRecording) {
+    btn.style.background = "#E24B4A";
+    btn.style.transform = "scale(1.1)";
+    status.textContent = "Listening...";
+    status.style.color = "#E24B4A";
+    preview.style.display = "none";
+    submitBtn.style.display = "none";
+    setTimeout(function() {
+      micRecording = false;
+      btn.style.background = "#5b3ff8";
+      btn.style.transform = "scale(1)";
+      status.textContent = "Tap to record again";
+      status.style.color = "#AFA9EC";
+      preview.textContent = voiceTexts[currentQ] || voiceTexts[0];
+      preview.style.display = "block";
+      submitBtn.style.display = "block";
+    }, 2200);
+  }
+}
+
+function submitVoiceAnswer() {
+  var preview = document.getElementById("voice-preview");
+  showSuccess(preview.textContent);
+}
+
+function submitAnswer() {
+  var inp = document.getElementById("q-inp");
+  var val = inp.value.trim();
+  if (!val) { inp.style.border = "0.5px solid #E24B4A"; setTimeout(function(){ inp.style.border = "0.5px solid rgba(255,255,255,0.15)"; }, 1000); return; }
+  showSuccess(val);
+}
+
+function showSuccess(val) {
+  document.getElementById("active-q-card").querySelector("[id='q-text']").parentElement.style.display = "none";
+  var success = document.getElementById("q-success");
+  success.style.display = "block";
+  document.getElementById("success-preview").textContent = val.substring(0, 60) + (val.length > 60 ? "..." : "");
+  // Mark current question in list as done
+  var qItem = document.getElementById("qlist-" + currentQ);
+  if (qItem) { qItem.style.background = "rgba(29,158,117,0.15)"; qItem.style.borderColor = "rgba(29,158,117,0.4)"; qItem.querySelector("div:last-child").style.color = "#1D9E75"; }
+  // Update achieve signal if answered
+  if (currentQ === 0) {
+    var sig = document.getElementById("achieve-signal");
+    if (sig) { sig.innerHTML = "<div style=\"width:18px;height:18px;border-radius:50%;background:#1D9E75;display:flex;align-items:center;justify-content:center;flex-shrink:0\"><svg width=\"9\" height=\"9\" viewBox=\"0 0 12 12\" fill=\"none\" stroke=\"white\" stroke-width=\"2\"><polyline points=\"2,6 5,9 10,3\"/></svg></div><span style=\"font-size:11px;color:white\">Specific achievement added to bio</span>"; }
+  }
+}
+
+function toggleAllQ() {
+  allQOpen = !allQOpen;
+  var list = document.getElementById("all-q-list");
+  var ico = document.getElementById("see-all-ico");
+  var btn = document.getElementById("see-all-btn");
+  list.style.display = allQOpen ? "flex" : "none";
+  ico.style.transform = allQOpen ? "rotate(180deg)" : "";
+  btn.querySelector("span") && (btn.querySelector("span").textContent = allQOpen ? "Hide questions" : "See all questions");
+  // update button text directly
+  btn.childNodes.forEach(function(n){ if(n.nodeType===3 && n.textContent.trim()) n.textContent = allQOpen ? " Hide questions" : " See all questions"; });
+}
+
+function selectQ(idx) {
+  currentQ = idx;
+  // Update active question text
+  document.getElementById("q-text").textContent = questions[idx].text;
+  document.getElementById("q-reason").textContent = questions[idx].reason;
+  // Reset input with contextual placeholder
+  var placeholders = [
+    "e.g. I organised a fundraiser that raised $4,200 for new sports equipment...",
+    "e.g. I like to lead by example and check in with teammates during tough moments...",
+    "e.g. I learned how to stay calm under pressure while serving 80+ people per shift..."
+  ];
+  var inp = document.getElementById("q-inp");
+  inp.value = "";
+  inp.placeholder = placeholders[idx] || "Type your answer...";
+  document.getElementById("q-success").style.display = "none";
+  var qTextParent = document.getElementById("active-q-card").querySelector("[id='q-text']").parentElement;
+  qTextParent.style.display = "block";
+  // Update question number
+  document.getElementById("active-q-card").querySelector("div").textContent = "Question " + (idx+1) + " of 3";
+  // Highlight selected in list
+  [0,1,2].forEach(function(i) {
+    var item = document.getElementById("qlist-" + i);
+    if (!item) return;
+    var isDone = item.style.borderColor.includes("158,117");
+    if (!isDone) {
+      item.style.background = i === idx ? "rgba(91,63,248,0.25)" : "rgba(255,255,255,0.05)";
+      item.style.borderColor = i === idx ? "rgba(91,63,248,0.5)" : "rgba(255,255,255,0.1)";
+      item.querySelector("div").textContent = i === idx ? "Currently answering" : questions[i].reason.substring(0, 20) + "...";
+    }
+  });
+  // Reset voice
+  setInputMode("text");
+  document.getElementById("mic-status").textContent = "Tap to speak your answer";
+  document.getElementById("voice-preview").style.display = "none";
+  document.getElementById("voice-submit").style.display = "none";
+}
+
+// ── LEAFLET MAP INIT ──────────────────────────────────────────────────────
+var mapInitialised = false;
+var leafletMap = null;
+
+function initMap() {
+  if (mapInitialised) return;
+  mapInitialised = true;
+  // Toronto downtown centre
+  var torontoCenter = [43.6532, -79.3832];
+  leafletMap = L.map('leaflet-map', {
+    center: torontoCenter,
+    zoom: 15,
+    zoomControl: false,
+    attributionControl: false
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(leafletMap);
+
+  // Jobs near downtown Toronto
+  var jobs = [
+    { lat: 43.6553, lng: -79.3806, label: 'T', title: 'Team member · Target', match: '91%', dist: '0.8 km', bg: '#E6F1FB', color: '#0C447C' },
+    { lat: 43.6514, lng: -79.3765, label: 'S', title: 'Cashier · Shoppers Drug Mart', match: '87%', dist: '1.1 km', bg: '#FCEBEB', color: '#791F1F' },
+    { lat: 43.6570, lng: -79.3900, label: 'SC', title: 'Crew member · Second Cup', match: '84%', dist: '1.4 km', bg: '#E1F5EE', color: '#085041' },
+    { lat: 43.6490, lng: -79.3750, label: 'TH', title: 'Tim Hortons', match: '79%', dist: '2.1 km', bg: '#FAEEDA', color: '#633806' },
+    { lat: 43.6600, lng: -79.3950, label: 'W', title: 'Walmart', match: '76%', dist: '2.8 km', bg: '#E6F1FB', color: '#185FA5' },
+  ];
+
+  // "You" marker
+  var youIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:14px;height:14px;border-radius:50%;background:#5b3ff8;border:3px solid white;box-shadow:0 0 0 3px rgba(91,63,248,0.25)"></div>',
+    iconSize: [14, 14], iconAnchor: [7, 7]
+  });
+  L.marker(torontoCenter, { icon: youIcon }).addTo(leafletMap)
+    .bindTooltip('You', { permanent: true, direction: 'top', offset: [0, -10], className: 'map-you-label' });
+
+  // Job markers
+  jobs.forEach(function(j) {
+    var icon = L.divIcon({
+      className: '',
+      html: '<div style="width:28px;height:28px;border-radius:50%;background:'+j.bg+';color:'+j.color+';border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,0.2);cursor:pointer">'+j.label+'</div>',
+      iconSize: [28, 28], iconAnchor: [14, 14]
+    });
+    L.marker([j.lat, j.lng], { icon: icon }).addTo(leafletMap)
+      .bindPopup('<div style="font-size:11px;font-weight:500;color:#1e293b;margin-bottom:2px">'+j.title+'</div><div style="font-size:10px;color:#64748B">'+j.dist+' · '+j.match+' match</div>', { maxWidth: 180, className: 'job-popup' });
+  });
+}
+
+// ── UNLOCK "I DON'T HAVE THIS" ────────────────────────────────────────────
+var unlockFallbacks = [
+  { lbl: 'Complete your bio with a specific achievement', badge: '+11 jobs', action: 'Edit', confirm: 'Edited ✓' },
+  { lbl: 'Set your max commute distance', badge: '+8 jobs', action: 'Set', confirm: 'Set ✓' },
+  { lbl: 'Add a profile photo', badge: '+6 jobs', action: 'Add', confirm: 'Added ✓' }
+];
+var fallbackIdx = 0;
+
+function toggleUnlockExpand(expandId, btn) {
+  var el = document.getElementById(expandId);
+  var open = el.style.display === 'block';
+  el.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? btn._original || btn.textContent : 'Hide info';
+  if (!open) btn._original = btn.textContent.replace('Hide info', btn._original || btn.textContent);
+}
+
+function dismissUnlock(wrapId) {
+  var wrap = document.getElementById(wrapId);
+  wrap.style.transition = 'opacity 0.2s';
+  wrap.style.opacity = '0';
+  setTimeout(function() {
+    if (fallbackIdx < unlockFallbacks.length) {
+      var f = unlockFallbacks[fallbackIdx++];
+      wrap.innerHTML = '<div class="unlock-item"><span class="unlock-lbl">' + f.lbl + '</span><span class="unlock-badge">' + f.badge + '</span><button class="unlock-btn" onclick="this.textContent=\'' + f.confirm + '\';this.style.background=\'#3B6D11\'">' + f.action + '</button></div>';
+      wrap.style.opacity = '0';
+      requestAnimationFrame(function() { wrap.style.opacity = '1'; });
+    } else {
+      wrap.style.display = 'none';
+    }
+  }, 220);
+}
+
+// Override setJobView to init map on first open
+var _origSetJobView = setJobView;
+setJobView = function(v) {
+  _origSetJobView(v);
+  if (v === 'map') {
+    setTimeout(function() {
+      initMap();
+      if (leafletMap) leafletMap.invalidateSize();
+    }, 50);
+  }
+};
+</script>
+</body>
+</html>
