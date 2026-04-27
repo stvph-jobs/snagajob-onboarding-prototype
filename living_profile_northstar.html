@@ -3,11 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Living profile — north star</title>
+<title>Living Profile — North Star · Snagajob</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-body{background:#f0f0f5;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem 3rem}
-.scene{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+body{background:#f0f0f5;min-height:100vh;display:flex;flex-direction:row;align-items:flex-start;justify-content:center;padding:2rem 2rem 3rem;gap:48px}
+.scene{display:flex;flex-direction:column;align-items:center;gap:12px}
+.proto-sidebar{width:260px;flex-shrink:0;position:sticky;top:2rem;padding-top:0.5rem}
+.proto-sidebar-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.12em;color:#94a3b8;margin-bottom:4px}
+.proto-sidebar-name{font-size:1.4rem;font-weight:600;color:#1A1035;line-height:1.2;margin-bottom:8px}
+.proto-sidebar-badge{display:inline-block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#5b3ff8;background:#EEEDFE;border-radius:20px;padding:3px 10px;margin-bottom:28px}
+.proto-flows-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:#94a3b8;margin-bottom:12px}
+.proto-flows{list-style:none;display:flex;flex-direction:column}
+.proto-flows li{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(26,16,53,0.07)}
+.proto-flows li:last-child{border-bottom:none}
+.proto-flow-num{width:20px;height:20px;border-radius:50%;background:#EEEDFE;color:#5b3ff8;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.proto-flow-name{font-size:13px;font-weight:500;color:#1A1035;margin-bottom:2px;line-height:1.3}
+.proto-flow-desc{font-size:11.5px;color:#64748B;line-height:1.45}
 .state-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
 .state-lbl{font-size:11px;color:#64748B}
 .sbtn{font-size:11px;font-weight:500;padding:5px 13px;border-radius:20px;cursor:pointer;border:0.5px solid #cbd5e1;background:white;color:#64748B;transition:all 0.15s}
@@ -252,6 +263,58 @@ body{background:#f0f0f5;min-height:100vh;display:flex;flex-direction:column;alig
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
+
+<aside class="proto-sidebar">
+  <p class="proto-sidebar-label">Jobseeker Experience</p>
+  <h2 class="proto-sidebar-name">Living<br>Profile</h2>
+  <span class="proto-sidebar-badge">North Star · Mobile</span>
+  <p class="proto-flows-label">Key Features</p>
+  <ol class="proto-flows">
+    <li>
+      <span class="proto-flow-num">1</span>
+      <div>
+        <p class="proto-flow-name">Visitor View</p>
+        <p class="proto-flow-desc">Public profile as seen by employers and contacts</p>
+      </div>
+    </li>
+    <li>
+      <span class="proto-flow-num">2</span>
+      <div>
+        <p class="proto-flow-name">Owner View</p>
+        <p class="proto-flow-desc">Editable living profile with inline controls</p>
+      </div>
+    </li>
+    <li>
+      <span class="proto-flow-num">3</span>
+      <div>
+        <p class="proto-flow-name">Dashboard</p>
+        <p class="proto-flow-desc">Job match analytics and profile strength score</p>
+      </div>
+    </li>
+    <li>
+      <span class="proto-flow-num">4</span>
+      <div>
+        <p class="proto-flow-name">AI Profile Coach</p>
+        <p class="proto-flow-desc">Personalized suggestions to improve your match rate</p>
+      </div>
+    </li>
+    <li>
+      <span class="proto-flow-num">5</span>
+      <div>
+        <p class="proto-flow-name">Job Match Map</p>
+        <p class="proto-flow-desc">Geographic view of matched roles near you</p>
+      </div>
+    </li>
+    <li>
+      <span class="proto-flow-num">6</span>
+      <div>
+        <p class="proto-flow-name">Dynamic Match Score</p>
+        <p class="proto-flow-desc">Real-time compatibility scoring per listing</p>
+      </div>
+    </li>
+  </ol>
+</aside>
+
 <div class="scene">
   <div class="state-bar">
     <span class="state-lbl">View as:</span>

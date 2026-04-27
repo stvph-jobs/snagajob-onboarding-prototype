@@ -205,6 +205,30 @@
       flex-wrap: wrap;
     }
 
+    /* ── Section note ── */
+    .section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 28px;
+      padding-top: 8px;
+    }
+    .section-header .section-label {
+      margin-bottom: 0;
+      padding-top: 0;
+    }
+    .section-note {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      background: var(--accent-light);
+      border-radius: 100px;
+      padding: 4px 12px;
+      display: inline-block;
+      align-self: flex-start;
+    }
+
     /* ── Fade-in ── */
     .fade-up {
       opacity: 0;
@@ -232,20 +256,37 @@
     <main>
       <div class="hero fade-up">
         <p class="hero-label">Overview</p>
-        <h1>Work in<br><em>progress.</em></h1>
-        <p>A collection of interactive prototypes exploring new directions for the Snagajob product experience.</p>
+        <h1>Snagajob <em>Reimagined.</em></h1>
+        <p>A collection of interactive prototypes exploring a new model for hourly job matching — built around the worker's profile, not the job listing.</p>
       </div>
 
       <div class="cards-section">
-        <p class="section-label fade-up">Prototypes — 2</p>
+        <div class="section-header fade-up">
+          <p class="section-label">Prototypes — 3</p>
+          <span class="section-note">Jobseeker experiences optimized for mobile web &amp; app</span>
+        </div>
 
         <div class="cards fade-up">
 
           <a class="card"
-             href="https://stvph-jobs.github.io/snagajob-onboarding-prototype/living_profile_northstar.html"
+             href="https://stvph-jobs.github.io/snagajob-onboarding-prototype/career_profile_onboarding.html"
              target="_blank" rel="noopener">
             <div class="card-number">01</div>
-            <h2 class="card-title">The North Star</h2>
+            <h2 class="card-title">Onboarding</h2>
+            <p class="card-desc">A reimagined onboarding flow for career profiles — streamlined, intentional, and designed to reduce friction from day one.</p>
+            <div class="card-cta">
+              View prototype
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 8h10M9 4l4 4-4 4"/>
+              </svg>
+            </div>
+          </a>
+
+          <a class="card"
+             href="https://stvph-jobs.github.io/snagajob-onboarding-prototype/living_profile_northstar.html"
+             target="_blank" rel="noopener">
+            <div class="card-number">02</div>
+            <h2 class="card-title">Living Profile — North Star</h2>
             <p class="card-desc">A vision prototype exploring the future of the living profile — dynamic, adaptive, and built around the job seeker.</p>
             <div class="card-cta">
               View prototype
@@ -256,11 +297,11 @@
           </a>
 
           <a class="card"
-             href="https://stvph-jobs.github.io/snagajob-onboarding-prototype/career_profile_onboarding.html"
+             href="https://stvph-jobs.github.io/snagajob-onboarding-prototype/employer_dashboard_1.html"
              target="_blank" rel="noopener">
-            <div class="card-number">02</div>
-            <h2 class="card-title">Onboarding</h2>
-            <p class="card-desc">A reimagined onboarding flow for career profiles — streamlined, intentional, and designed to reduce friction from day one.</p>
+            <div class="card-number">03</div>
+            <h2 class="card-title">Employer Dashboard</h2>
+            <p class="card-desc">An employer-side prototype exploring AI-assisted hiring — candidate matching, outreach automation, interview scheduling, and profile-based qualification. Desktop experience.</p>
             <div class="card-cta">
               View prototype
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">

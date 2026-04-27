@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snagajob for employers</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{background:#f8fafc;min-height:100vh;color:#1e293b}
+
+/* ── NAV ── */
+.nav{background:#1A1035;padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
+.nav-logo{font-size:15px;font-weight:500;color:white}
+.nav-logo span{color:#7F77DD}
+.nav-tabs{display:flex;gap:2px}
+.nav-tab{font-size:12px;font-weight:500;padding:6px 12px;border-radius:8px;cursor:pointer;color:#AFA9EC;border:none;background:none;transition:all 0.15s}
+.nav-tab.on{background:rgba(255,255,255,0.1);color:white}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-plan{font-size:11px;font-weight:500;background:rgba(91,63,248,0.3);color:#AFA9EC;border-radius:20px;padding:3px 10px;border:0.5px solid rgba(91,63,248,0.4)}
+.nav-av{width:30px;height:30px;border-radius:50%;background:#5b3ff8;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:white}
+
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 52px)}
+
+/* ── SIDEBAR ── */
+.sb{background:white;border-right:0.5px solid #e2e8f0;padding:16px 0;display:flex;flex-direction:column;position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto}
+.sb-lbl{font-size:10px;font-weight:500;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;padding:0 16px;margin:12px 0 5px}
+.sb-lbl:first-child{margin-top:0}
+.sb-item{padding:8px 16px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;font-size:13px;color:#64748B;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:#f8fafc;color:#1e293b}
+.sb-item.on{background:#EEEDFE;color:#3C3489;border-left:2px solid #5b3ff8;font-weight:500}
+.sb-item svg{flex-shrink:0}
+.sb-badge{font-size:10px;font-weight:500;background:#5b3ff8;color:white;border-radius:20px;padding:1px 7px;margin-left:auto}
+.sb-badge.green{background:#3B6D11}
+.sb-badge.amber{background:#EF9F27}
+.sb-divider{height:0.5px;background:#e2e8f0;margin:8px 16px}
+.sb-job{padding:8px 16px 8px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;border-left:2px solid transparent;transition:all 0.15s}
+.sb-job:hover{background:#f8fafc}
+.sb-job.on{background:#EEEDFE;border-left-color:#5b3ff8}
+.sb-job-dot{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.sb-job-title{font-size:12px;font-weight:500;color:#1e293b}
+.sb-job-sub{font-size:10px;color:#64748B;margin-top:1px}
+.sb-job-cnt{font-size:10px;font-weight:500;border-radius:20px;padding:2px 7px;margin-left:auto;white-space:nowrap}
+
+/* ── MAIN ── */
+.main{padding:24px 28px;display:flex;flex-direction:column;gap:20px;min-width:0;max-width:1100px}
+
+/* ── DATE HEADER ── */
+.date-header{display:flex;align-items:flex-end;justify-content:space-between}
+.date-lbl{font-size:13px;color:#64748B}
+.date-title{font-size:24px;font-weight:500;color:#1e293b;margin-top:2px}
+.dh-right{display:flex;gap:8px}
+.dh-btn{font-size:12px;font-weight:500;padding:8px 14px;border-radius:10px;cursor:pointer;border:none;transition:all 0.15s;display:flex;align-items:center;gap:5px}
+.dh-outline{background:white;border:0.5px solid #e2e8f0;color:#64748B}
+.dh-outline:hover{border-color:#5b3ff8;color:#5b3ff8}
+.dh-primary{background:#5b3ff8;color:white}
+.dh-primary:hover{background:#4a2fe0}
+
+/* ── INTERVIEW SCHEDULE ── */
+.schedule-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.interview-card{background:white;border-radius:14px;border:0.5px solid #e2e8f0;overflow:hidden;cursor:pointer;transition:all 0.2s}
+.interview-card:hover{border-color:#5b3ff8;box-shadow:0 4px 20px rgba(91,63,248,0.08)}
+.interview-card.past{opacity:0.55}
+.ic-time-bar{padding:9px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #e2e8f0}
+.ic-time{font-size:12px;font-weight:500;color:#1e293b}
+.ic-status{font-size:10px;font-weight:500;border-radius:20px;padding:2px 8px}
+.ic-body{padding:13px 14px}
+.ic-cand{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.ic-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+.ic-name{font-size:13px;font-weight:500;color:#1e293b}
+.ic-role{font-size:11px;color:#64748B;margin-top:1px}
+.ic-score{font-size:11px;font-weight:500;color:#64748B;margin-top:1px}
+.ic-brief{background:#f8fafc;border-radius:8px;padding:8px 10px;font-size:11px;color:#475569;line-height:1.5;margin-bottom:10px}
+.ic-qs{display:flex;flex-direction:column;gap:4px}
+.ic-q{font-size:11px;color:#3C3489;display:flex;align-items:flex-start;gap:5px}
+.ic-q-dot{width:4px;height:4px;border-radius:50%;background:#5b3ff8;margin-top:5px;flex-shrink:0}
+.ic-actions{display:flex;gap:6px;margin-top:12px}
+.ic-btn{flex:1;padding:7px;border-radius:9px;font-size:11px;font-weight:500;cursor:pointer;border:none;text-align:center;transition:all 0.15s}
+.ic-primary{background:#5b3ff8;color:white}
+.ic-primary:hover{background:#4a2fe0}
+.ic-outline{background:#f1f5f9;color:#64748B;border:0.5px solid #e2e8f0}
+.ic-outline:hover{border-color:#5b3ff8;color:#5b3ff8}
+.ic-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:500;border-radius:6px;padding:2px 7px;margin-bottom:8px}
+.empty-day{background:white;border-radius:14px;border:1.5px dashed #e2e8f0;padding:28px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty-icon{width:44px;height:44px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto}
+
+/* ── AUTOPILOT BANNER ── */
+.autopilot-banner{background:linear-gradient(135deg,#1A1035,#2D1B6E);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+.autopilot-banner::after{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:rgba(91,63,248,0.15)}
+.ap-ico{width:40px;height:40px;border-radius:12px;background:rgba(91,63,248,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ap-content{flex:1;min-width:0}
+.ap-title{font-size:14px;font-weight:500;color:white;margin-bottom:3px}
+.ap-sub{font-size:12px;color:#AFA9EC;line-height:1.5}
+.ap-toggle{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.toggle-track{width:44px;height:24px;border-radius:12px;background:rgba(255,255,255,0.1);cursor:pointer;position:relative;transition:background 0.2s;border:0.5px solid rgba(255,255,255,0.2)}
+.toggle-track.on{background:#5b3ff8;border-color:#5b3ff8}
+.toggle-thumb{width:18px;height:18px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left 0.2s}
+.toggle-track.on .toggle-thumb{left:23px}
+.ap-toggle-lbl{font-size:11px;font-weight:500;color:#AFA9EC}
+
+/* ── HIRING BAR SECTION ── */
+.hiring-bar-section{background:white;border-radius:14px;border:0.5px solid #e2e8f0;padding:18px 20px}
+.hbs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.hbs-title{font-size:14px;font-weight:500;color:#1e293b}
+.hbs-sub{font-size:12px;color:#64748B;margin-top:2px}
+.hbs-count{font-size:24px;font-weight:500;color:#5b3ff8;line-height:1}
+.hbs-count-lbl{font-size:11px;color:#64748B;margin-top:2px}
+.slider-wrap{display:flex;flex-direction:column;gap:8px}
+.slider-labels{display:flex;justify-content:space-between;font-size:11px}
+.slider-lbl-l{color:#791F1F;font-weight:500}
+.slider-lbl-r{color:#27500A;font-weight:500}
+input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:pointer}
+.slider-ticks{display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;margin-top:2px}
+.criteria-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.crit-chip{font-size:11px;padding:4px 11px;border-radius:20px;border:0.5px solid #e2e8f0;background:#f8fafc;color:#64748B;display:flex;align-items:center;gap:4px}
+.crit-chip.active{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC}
+.status-legend{display:flex;gap:14px;margin-top:14px;padding-top:12px;border-top:0.5px solid #e2e8f0}
+.sl-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#64748B}
+.sl-dot{width:8px;height:8px;border-radius:50%}
+
+/* ── OUTREACH QUEUE ── */
+.outreach-section{background:white;border-radius:14px;border:0.5px solid #e2e8f0;overflow:hidden}
+.os-header{padding:14px 18px;border-bottom:0.5px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;background:#f8fafc}
+.os-title{font-size:13px;font-weight:500;color:#1e293b}
+.os-sub{font-size:11px;color:#64748B;margin-top:1px}
+.os-automate{font-size:11px;font-weight:500;color:#5b3ff8;cursor:pointer;display:flex;align-items:center;gap:4px}
+.outreach-row{padding:12px 18px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid #f1f5f9;transition:background 0.15s;cursor:pointer}
+.outreach-row:last-child{border-bottom:none}
+.outreach-row:hover{background:#fafbff}
+.or-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+.or-info{flex:1;min-width:0}
+.or-name{font-size:13px;font-weight:500;color:#1e293b}
+.or-meta{font-size:11px;color:#64748B;margin-top:1px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.or-status{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:500;border-radius:20px;padding:2px 7px}
+.or-ai-reason{font-size:11px;color:#475569;line-height:1.4;margin-top:4px;font-style:italic}
+.or-score{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
+.or-score-num{font-size:18px;font-weight:500;color:#1e293b;line-height:1}
+.or-score-lbl{font-size:9px;color:#64748B;text-transform:uppercase}
+.or-actions{display:flex;gap:6px;flex-shrink:0}
+.or-btn{font-size:11px;font-weight:500;padding:6px 12px;border-radius:9px;cursor:pointer;border:none;transition:all 0.15s;white-space:nowrap}
+.or-invite{background:#5b3ff8;color:white}
+.or-invite:hover{background:#4a2fe0}
+.or-skip{background:#f1f5f9;color:#64748B;border:0.5px solid #e2e8f0}
+.or-skip:hover{border-color:#cbd5e1}
+.response-bar{display:flex;align-items:center;gap:5px;margin-top:4px}
+.rb-lbl{font-size:10px;color:#94a3b8}
+.rb-track{flex:1;max-width:60px;height:3px;background:#e2e8f0;border-radius:2px;overflow:hidden}
+.rb-fill{height:100%;border-radius:2px;background:#5b3ff8}
+.rb-pct{font-size:10px;color:#64748B;font-weight:500}
+
+/* ── SECTION HEADER ── */
+.section-hdr{display:flex;align-items:center;justify-content:space-between}
+.section-title{font-size:15px;font-weight:500;color:#1e293b}
+.section-sub{font-size:12px;color:#64748B;margin-top:2px}
+.section-action{font-size:12px;font-weight:500;color:#5b3ff8;cursor:pointer;background:none;border:none;display:flex;align-items:center;gap:4px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:white;font-size:12px;font-weight:500;padding:10px 18px;border-radius:20px;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:opacity 0.3s;pointer-events:none}
+
+/* ── PROFILE MODAL ── */
+.profile-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:400;display:none;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto}
+.profile-modal-overlay.open{display:flex}
+.profile-modal{background:white;border-radius:20px;width:100%;max-width:560px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.18);flex-shrink:0}
+.pm-chrome{background:#f1f5f9;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid #e2e8f0}
+.pm-dots{display:flex;gap:4px}
+.pm-dot{width:8px;height:8px;border-radius:50%}
+.pm-url{flex:1;background:white;border:0.5px solid #e2e8f0;border-radius:6px;padding:3px 10px;font-size:11px;color:#5b3ff8;font-weight:500}
+.pm-close{font-size:16px;color:#64748B;cursor:pointer;background:none;border:none;padding:0 4px;line-height:1;margin-left:4px}
+.pm-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.pm-hero{display:flex;gap:13px;align-items:flex-start}
+.pm-av{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500;flex-shrink:0;position:relative}
+.pm-av-ring{position:absolute;inset:-2px;border-radius:50%;border:2px solid #5b3ff8;opacity:0.35}
+.pm-name{font-size:20px;font-weight:500;color:#1e293b}
+.pm-hl{font-size:12px;color:#64748B;margin-top:2px}
+.pm-loc{font-size:11px;color:#64748B;margin-top:2px;display:flex;align-items:center;gap:3px}
+.pm-avail-pill{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:500;margin-top:6px}
+.pm-badges{display:flex;gap:5px;flex-wrap:wrap}
+.pm-badge{font-size:10px;font-weight:500;border-radius:20px;padding:3px 9px}
+.pm-bio{font-size:12px;color:#475569;line-height:1.65;padding:10px 12px;background:#f8fafc;border-left:3px solid #5b3ff8;border-radius:0 10px 10px 0}
+.pm-sec-t{font-size:9px;font-weight:500;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;padding-bottom:5px;border-bottom:0.5px solid #e2e8f0;margin-bottom:9px}
+.pm-tl{display:flex;flex-direction:column;gap:0;position:relative;padding-left:16px}
+.pm-tl-line{position:absolute;left:3px;top:8px;bottom:8px;width:1.5px;background:#e2e8f0}
+.pm-tl-item{display:flex;gap:10px;position:relative;padding-bottom:12px}
+.pm-tl-item:last-child{padding-bottom:0}
+.pm-tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;position:relative;z-index:1;border:1.5px solid white}
+.pm-tl-year{font-size:9px;font-weight:500;color:#64748B;margin-bottom:1px}
+.pm-tl-title{font-size:11px;font-weight:500;color:#1e293b}
+.pm-tl-sub{font-size:10px;color:#64748B}
+.pm-tl-detail{font-size:10px;color:#64748B;line-height:1.5;margin-top:2px}
+.pm-sk-wrap{display:flex;flex-wrap:wrap;gap:4px}
+.pm-sk{font-size:10px;padding:3px 8px;border-radius:20px;background:#f1f5f9;color:#64748B;border:0.5px solid #e2e8f0}
+.pm-sk.lang{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC}
+.pm-cert{display:flex;align-items:center;gap:9px;padding:8px 11px;background:#f8fafc;border-radius:9px;border:0.5px solid #e2e8f0;margin-bottom:6px}
+.pm-cert:last-child{margin-bottom:0}
+.pm-cert-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pm-cert-name{font-size:11px;font-weight:500;color:#1e293b}
+.pm-cert-issuer{font-size:10px;color:#64748B;margin-top:1px}
+.pm-rec{background:#f8fafc;border-radius:11px;padding:10px 12px;margin-bottom:7px;border:0.5px solid #e2e8f0}
+.pm-rec:last-child{margin-bottom:0}
+.pm-rec-top{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.pm-rec-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.pm-rec-name{font-size:11px;font-weight:500;color:#1e293b}
+.pm-rec-role{font-size:10px;color:#64748B}
+.pm-rec-rel{font-size:9px;font-weight:500;border-radius:5px;padding:1px 6px;margin-left:auto}
+.pm-rec-body{font-size:11px;color:#475569;line-height:1.55;font-style:italic}
+.pm-rec-tag{display:inline-block;font-size:9px;font-weight:500;background:#EEEDFE;color:#3C3489;border-radius:5px;padding:1px 6px;margin-top:4px}
+.pm-pref-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:#f8fafc;border-radius:6px;margin-bottom:3px}
+.pm-pref-row:last-child{margin-bottom:0}
+.pm-prefl{font-size:10px;color:#64748B}
+.pm-prefv{font-size:10px;font-weight:500;color:#1e293b}
+.pm-footer{border-top:0.5px solid #e2e8f0;padding:14px 20px;display:flex;gap:8px}
+.pm-fbtn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;text-align:center}
+.pm-primary{background:#5b3ff8;color:white}
+.pm-primary:hover{background:#4a2fe0}
+.pm-outline{background:#f1f5f9;color:#64748B;border:0.5px solid #e2e8f0}
+
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">snaga<span>job</span> <span style="font-size:10px;color:#534AB7;font-weight:400;margin-left:3px">for employers</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab on">Today</button>
+    <button class="nav-tab">Candidates</button>
+    <button class="nav-tab">Jobs</button>
+    <button class="nav-tab">Analytics</button>
+  </div>
+  <div class="nav-right">
+    <div class="nav-plan">Pro plan · Target Toronto</div>
+    <div class="nav-av">TM</div>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sb">
+    <div class="sb-lbl">Today</div>
+    <button class="sb-item on" onclick="setPage('today')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
+      Interviews
+      <span class="sb-badge green">3</span>
+    </button>
+    <button class="sb-item" onclick="setPage('outreach')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2L9 7M14 2H9M14 2V7"/><path d="M6 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"/></svg>
+      Outreach queue
+      <span class="sb-badge">8</span>
+    </button>
+    <button class="sb-item" onclick="setPage('hiring-bar')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="8" r="2"/><line x1="1" y1="8" x2="3" y2="8"/><line x1="7" y1="8" x2="15" y2="8"/><circle cx="12" cy="4" r="2"/><line x1="1" y1="4" x2="10" y2="4"/><line x1="14" y1="4" x2="15" y2="4"/></svg>
+      Hiring bar
+    </button>
+    <div class="sb-divider"></div>
+    <div class="sb-lbl">Open roles</div>
+    <div class="sb-job on">
+      <div class="sb-job-dot" style="background:#E6F1FB;color:#0C447C">T</div>
+      <div><div class="sb-job-title">Team member</div><div class="sb-job-sub">Bloor St · $17–19/hr</div></div>
+      <div class="sb-job-cnt" style="background:#EAF3DE;color:#27500A">12✓</div>
+    </div>
+    <div class="sb-job">
+      <div class="sb-job-dot" style="background:#E6F1FB;color:#0C447C">T</div>
+      <div><div class="sb-job-title">Cashier</div><div class="sb-job-sub">Yonge St · $16–18/hr</div></div>
+      <div class="sb-job-cnt" style="background:#EEEDFE;color:#3C3489">7✓</div>
+    </div>
+    <div class="sb-job">
+      <div class="sb-job-dot" style="background:#E6F1FB;color:#0C447C">T</div>
+      <div><div class="sb-job-title">Stock associate</div><div class="sb-job-sub">Bloor St · $18/hr</div></div>
+      <div class="sb-job-cnt" style="background:#EEEDFE;color:#3C3489">4✓</div>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-lbl">Autopilot</div>
+    <button class="sb-item" onclick="toggleAutopilot()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1v3M8 12v3M3.5 3.5l2 2M10.5 10.5l2 2M1 8h3M12 8h3M3.5 12.5l2-2M10.5 5.5l2-2"/></svg>
+      <span id="ap-sb-lbl">Autopilot · Off</span>
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- TODAY VIEW -->
+    <div id="page-today">
+      <div class="date-header">
+        <div>
+          <div class="date-lbl">Friday, April 25, 2026</div>
+          <div class="date-title">Good morning — 3 interviews today</div>
+        </div>
+        <div class="dh-right">
+          <button class="dh-btn dh-outline" onclick="showToast('Opening calendar sync settings')">Sync calendar</button>
+          <button class="dh-btn dh-primary" onclick="setPage('outreach')">Find more candidates →</button>
+        </div>
+      </div>
+
+      <!-- AUTOPILOT BANNER -->
+      <div class="autopilot-banner">
+        <div class="ap-ico">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.5"><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2z"/><path d="M10 6v5l3 2"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2"/></svg>
+        </div>
+        <div class="ap-content">
+          <div class="ap-title">Autopilot is off</div>
+          <div class="ap-sub">Turn on autopilot and Snagajob will automatically invite qualified candidates to interview as they apply — you wake up to a full calendar.</div>
+        </div>
+        <div class="ap-toggle">
+          <div class="toggle-track" id="ap-toggle" onclick="toggleAutopilot()"><div class="toggle-thumb"></div></div>
+          <div class="ap-toggle-lbl" id="ap-lbl">Off</div>
+        </div>
+      </div>
+
+      <!-- INTERVIEW SCHEDULE -->
+      <div>
+        <div class="section-hdr" style="margin-bottom:12px">
+          <div>
+            <div class="section-title">Today's interviews · Team member · Bloor St</div>
+            <div class="section-sub">All pre-qualified · each cleared your hiring bar before booking</div>
+          </div>
+          <button class="section-action" onclick="showToast('Opening full interview calendar')">View calendar →</button>
+        </div>
+
+        <div class="schedule-grid">
+
+          <!-- PAST -->
+          <div class="interview-card past" onclick="openProfile('jordan')">
+            <div class="ic-time-bar">
+              <div class="ic-time">9:00 – 9:30am</div>
+              <div class="ic-status" style="background:#EAF3DE;color:#27500A">Completed</div>
+            </div>
+            <div class="ic-body">
+              <div class="ic-tag" style="background:#EAF3DE;color:#27500A">⚡ Pre-qualified · #3 of 89</div>
+              <div class="ic-cand">
+                <div class="ic-av" style="background:#EEEDFE;color:#3C3489">JD</div>
+                <div>
+                  <div class="ic-name">Jordan Dasilva</div>
+                  <div class="ic-role">Student · 0.8km away</div>
+                  <div class="ic-score">Fit score: <strong>91/100</strong></div>
+                </div>
+              </div>
+              <div class="ic-brief">"Motivated student. Raised $4,200 for school sports equipment as council treasurer. Retail background, food handler cert, available immediately."</div>
+              <div class="ic-actions" onclick="event.stopPropagation()">
+                <button class="ic-btn ic-primary" onclick="showToast('Jordan moved to Hired')">Mark hired</button>
+                <button class="ic-btn ic-outline" onclick="showToast('Jordan moved to Reviewed')">Pass</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- UPCOMING — NOW -->
+          <div class="interview-card" style="border-color:#5b3ff8;box-shadow:0 0 0 2px rgba(91,63,248,0.15)" onclick="openProfile('aisha')">
+            <div class="ic-time-bar" style="background:#EEEDFE">
+              <div class="ic-time" style="color:#3C3489">11:00 – 11:30am</div>
+              <div class="ic-status" style="background:#5b3ff8;color:white">In ~2 hours</div>
+            </div>
+            <div class="ic-body">
+              <div class="ic-tag" style="background:#EAF3DE;color:#27500A">⚡ Pre-qualified · #5 of 89</div>
+              <div class="ic-cand">
+                <div class="ic-av" style="background:#E1F5EE;color:#085041">AK</div>
+                <div>
+                  <div class="ic-name">Aisha Kamara</div>
+                  <div class="ic-role">Retail exp · 1.4km away</div>
+                  <div class="ic-score">Fit score: <strong>88/100</strong></div>
+                </div>
+              </div>
+              <div class="ic-brief">"2 years retail at Shoppers. Food handler cert. Strong communication skills from customer-facing roles. Available mornings and weekdays."</div>
+              <div style="margin-bottom:8px">
+                <div style="font-size:10px;font-weight:500;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px">Suggested interview questions</div>
+                <div class="ic-qs">
+                  <div class="ic-q"><div class="ic-q-dot"></div>Tell me about a time a customer was unhappy — how did you handle it?</div>
+                  <div class="ic-q"><div class="ic-q-dot"></div>You've worked mornings before — how do you stay energised at the start of a shift?</div>
+                </div>
+              </div>
+              <div class="ic-actions" onclick="event.stopPropagation()">
+                <button class="ic-btn ic-primary" onclick="showToast('Video link copied to clipboard')">Join video call</button>
+                <button class="ic-btn ic-outline" onclick="showToast('Reschedule request sent to Aisha')">Reschedule</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- UPCOMING — LATER -->
+          <div class="interview-card" onclick="openProfile('marcus')">
+            <div class="ic-time-bar">
+              <div class="ic-time">2:00 – 2:30pm</div>
+              <div class="ic-status" style="background:#f1f5f9;color:#64748B">This afternoon</div>
+            </div>
+            <div class="ic-body">
+              <div class="ic-tag" style="background:#FAEEDA;color:#633806">#8 of 89 · above bar</div>
+              <div class="ic-cand">
+                <div class="ic-av" style="background:#FAEEDA;color:#633806">ML</div>
+                <div>
+                  <div class="ic-name">Marcus Lee</div>
+                  <div class="ic-role">Food service · 2.1km away</div>
+                  <div class="ic-score">Fit score: <strong>84/100</strong></div>
+                </div>
+              </div>
+              <div class="ic-brief">"Team lead experience in food service. CPR certified. Availability is weekends only — confirm this works before the interview to avoid a mismatch."</div>
+              <div style="margin-bottom:8px">
+                <div style="font-size:10px;font-weight:500;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px">Suggested interview questions</div>
+                <div class="ic-qs">
+                  <div class="ic-q"><div class="ic-q-dot"></div>Can you confirm you're available every weekend — this role requires it?</div>
+                  <div class="ic-q"><div class="ic-q-dot"></div>Tell me about a time you led a team through a busy period.</div>
+                </div>
+              </div>
+              <div class="ic-actions" onclick="event.stopPropagation()">
+                <button class="ic-btn ic-primary" onclick="showToast('Prep sheet opened for Marcus')">View full profile</button>
+                <button class="ic-btn ic-outline" onclick="showToast('Reschedule request sent to Marcus')">Reschedule</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEXT DAY PREVIEW -->
+      <div>
+        <div class="section-hdr" style="margin-bottom:12px">
+          <div>
+            <div class="section-title">Tomorrow — Saturday, April 26</div>
+            <div class="section-sub">No interviews scheduled yet</div>
+          </div>
+          <button class="section-action" onclick="setPage('outreach')">Find candidates to invite →</button>
+        </div>
+        <div class="empty-day">
+          <div class="empty-icon">
+            <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="3" y="4" width="16" height="15" rx="2"/><path d="M8 2v4M16 2v4M3 9h16"/></svg>
+          </div>
+          <div style="font-size:13px;font-weight:500;color:#1e293b">No interviews on Saturday yet</div>
+          <div style="font-size:12px;color:#64748B;max-width:280px;line-height:1.5">Your outreach queue has 8 qualified candidates who haven't been invited yet. Want AI to send invites automatically?</div>
+          <div style="display:flex;gap:8px">
+            <button class="dh-btn dh-primary" onclick="toggleAutopilot()">Turn on autopilot</button>
+            <button class="dh-btn dh-outline" onclick="setPage('outreach')">Review queue manually</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUTREACH VIEW -->
+    <div id="page-outreach" style="display:none">
+      <div class="date-header">
+        <div>
+          <div class="date-lbl">Outreach queue · Team member · Bloor St</div>
+          <div class="date-title">8 candidates AI suggests inviting</div>
+        </div>
+        <div class="dh-right">
+          <button class="dh-btn dh-outline" onclick="setPage('today')">← Back to today</button>
+          <button class="dh-btn dh-primary" onclick="inviteAll()">Invite all 8 →</button>
+        </div>
+      </div>
+
+      <!-- HIRING BAR SUMMARY -->
+      <div style="background:white;border-radius:12px;border:0.5px solid #e2e8f0;padding:14px 18px;display:flex;align-items:center;gap:16px">
+        <div>
+          <div style="font-size:11px;color:#64748B;margin-bottom:2px">Current hiring bar</div>
+          <div style="font-size:13px;font-weight:500;color:#1e293b">Balanced · <span style="color:#5b3ff8">89 candidates qualify</span></div>
+        </div>
+        <div style="height:30px;width:0.5px;background:#e2e8f0"></div>
+        <div style="display:flex;gap:14px">
+          <div style="font-size:11px;color:#64748B;display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:#3B6D11"></div>Actively looking: <strong style="color:#1e293b">34</strong></div>
+          <div style="font-size:11px;color:#64748B;display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:#EF9F27"></div>Open to offers: <strong style="color:#1e293b">41</strong></div>
+          <div style="font-size:11px;color:#64748B;display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:#94a3b8"></div>Currently employed: <strong style="color:#1e293b">14</strong></div>
+        </div>
+        <button class="dh-btn dh-outline" style="margin-left:auto" onclick="setPage('hiring-bar')">Adjust hiring bar →</button>
+      </div>
+
+      <!-- OUTREACH QUEUE -->
+      <div class="outreach-section">
+        <div class="os-header">
+          <div>
+            <div class="os-title">AI-suggested outreach · sorted by likelihood to accept</div>
+            <div class="os-sub">Candidates most likely to respond quickly based on activity and profile signals</div>
+          </div>
+          <button class="os-automate" onclick="toggleAutopilot()">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1v2M7 11v2M2.5 2.5l1.5 1.5M10 10l1.5 1.5M1 7h2M11 7h2M2.5 11.5L4 10M10 4l1.5-1.5"/></svg>
+            Automate this
+          </button>
+        </div>
+
+        <!-- Candidate 1 - actively looking -->
+        <div class="outreach-row" id="or0">
+          <div class="or-av" style="background:#E1F5EE;color:#085041">SP</div>
+          <div class="or-info">
+            <div class="or-name">Sofia Pereira</div>
+            <div class="or-meta">
+              <span>North York · 3.4km</span>
+              <span style="color:#e2e8f0">·</span>
+              <span class="or-status" style="background:#EAF3DE;color:#27500A"><span style="width:5px;height:5px;border-radius:50%;background:#3B6D11;display:inline-block"></span> Actively looking</span>
+            </div>
+            <div class="or-ai-reason">"Bilingual English/Portuguese — strong asset for your Bloor St location. First aid cert. Responded to last 3 invites within 2 hours."</div>
+            <div class="response-bar"><span class="rb-lbl">Response rate</span><div class="rb-track"><div class="rb-fill" style="width:92%"></div></div><span class="rb-pct">92%</span></div>
+          </div>
+          <div class="or-score"><div class="or-score-num">79</div><div class="or-score-lbl">fit score</div></div>
+          <div class="or-actions">
+            <button class="or-btn or-invite" onclick="inviteCandidate(this,'Sofia')">Invite →</button>
+            <button class="or-btn or-skip" onclick="skipCandidate('or0')">Skip</button>
+          </div>
+        </div>
+
+        <!-- Candidate 2 - actively looking -->
+        <div class="outreach-row" id="or1">
+          <div class="or-av" style="background:#FAEEDA;color:#633806">RJ</div>
+          <div class="or-info">
+            <div class="or-name">Ryan Johnson</div>
+            <div class="or-meta">
+              <span>Etobicoke · 2.8km</span>
+              <span style="color:#e2e8f0">·</span>
+              <span class="or-status" style="background:#EAF3DE;color:#27500A"><span style="width:5px;height:5px;border-radius:50%;background:#3B6D11;display:inline-block"></span> Actively looking</span>
+            </div>
+            <div class="or-ai-reason">"Warehouse experience translates well to stock floor. Has open availability including weekends. Auto-applied to 6 similar roles this week — highly motivated."</div>
+            <div class="response-bar"><span class="rb-lbl">Response rate</span><div class="rb-track"><div class="rb-fill" style="width:85%"></div></div><span class="rb-pct">85%</span></div>
+          </div>
+          <div class="or-score"><div class="or-score-num">74</div><div class="or-score-lbl">fit score</div></div>
+          <div class="or-actions">
+            <button class="or-btn or-invite" onclick="inviteCandidate(this,'Ryan')">Invite →</button>
+            <button class="or-btn or-skip" onclick="skipCandidate('or1')">Skip</button>
+          </div>
+        </div>
+
+        <!-- Candidate 3 - open to offers (passively employed) -->
+        <div class="outreach-row" id="or2">
+          <div class="or-av" style="background:#EEEDFE;color:#3C3489">KM</div>
+          <div class="or-info">
+            <div class="or-name">Keisha Martin</div>
+            <div class="or-meta">
+              <span>Scarborough · 4.1km</span>
+              <span style="color:#e2e8f0">·</span>
+              <span class="or-status" style="background:#FAEEDA;color:#633806"><span style="width:5px;height:5px;border-radius:50%;background:#EF9F27;display:inline-block"></span> Open to offers</span>
+              <span style="color:#e2e8f0">·</span>
+              <span style="font-size:10px;color:#94a3b8">Currently at Tim Hortons</span>
+            </div>
+            <div class="or-ai-reason">"Currently employed but marked open to offers. 3 years customer service. Strong match. Expect 24–48hr response — they're not urgently searching."</div>
+            <div class="response-bar"><span class="rb-lbl">Response rate</span><div class="rb-track"><div class="rb-fill" style="width:62%"></div></div><span class="rb-pct">62%</span></div>
+          </div>
+          <div class="or-score"><div class="or-score-num">82</div><div class="or-score-lbl">fit score</div></div>
+          <div class="or-actions">
+            <button class="or-btn or-invite" onclick="inviteCandidate(this,'Keisha')">Invite →</button>
+            <button class="or-btn or-skip" onclick="skipCandidate('or2')">Skip</button>
+          </div>
+        </div>
+
+        <!-- Candidate 4 - currently employed -->
+        <div class="outreach-row" id="or3">
+          <div class="or-av" style="background:#f1f5f9;color:#64748B">DT</div>
+          <div class="or-info">
+            <div class="or-name">David Tran</div>
+            <div class="or-meta">
+              <span>Toronto · 1.9km</span>
+              <span style="color:#e2e8f0">·</span>
+              <span class="or-status" style="background:#f1f5f9;color:#64748B"><span style="width:5px;height:5px;border-radius:50%;background:#94a3b8;display:inline-block"></span> Currently employed</span>
+              <span style="color:#e2e8f0">·</span>
+              <span style="font-size:10px;color:#94a3b8">At Shoppers · hasn't updated status</span>
+            </div>
+            <div class="or-ai-reason">"Exceptional fit score. Currently employed but profile visibility is set to 'open'. Low response rate — may take several days. Worth the reach given the match."</div>
+            <div class="response-bar"><span class="rb-lbl">Response rate</span><div class="rb-track"><div class="rb-fill" style="width:38%"></div></div><span class="rb-pct">38%</span></div>
+          </div>
+          <div class="or-score"><div class="or-score-num">86</div><div class="or-score-lbl">fit score</div></div>
+          <div class="or-actions">
+            <button class="or-btn or-invite" onclick="inviteCandidate(this,'David')">Invite →</button>
+            <button class="or-btn or-skip" onclick="skipCandidate('or3')">Skip</button>
+          </div>
+        </div>
+
+        <div style="padding:10px 18px;background:#f8fafc;border-top:0.5px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:11px;color:#64748B">+ 4 more candidates in queue</div>
+          <button style="font-size:11px;font-weight:500;color:#5b3ff8;background:none;border:none;cursor:pointer" onclick="showToast('Showing all 8 candidates')">Show all →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HIRING BAR VIEW -->
+    <div id="page-hiring-bar" style="display:none">
+      <div class="date-header">
+        <div>
+          <div class="date-lbl">Hiring bar · Team member · Bloor St</div>
+          <div class="date-title">Control who qualifies for your roles</div>
+        </div>
+        <div class="dh-right">
+          <button class="dh-btn dh-outline" onclick="setPage('today')">← Back to today</button>
+          <button class="dh-btn dh-primary" onclick="showToast('Hiring bar saved')">Save changes</button>
+        </div>
+      </div>
+
+      <div class="hiring-bar-section">
+        <div class="hbs-header">
+          <div>
+            <div class="hbs-title">Strictness level</div>
+            <div class="hbs-sub">Move the slider to see how many candidates qualify in real time</div>
+          </div>
+          <div style="text-align:right">
+            <div class="hbs-count" id="qual-count">89</div>
+            <div class="hbs-count-lbl">candidates qualify</div>
+          </div>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-labels">
+            <span class="slider-lbl-l">← Strict · fewer, better-matched</span>
+            <span class="slider-lbl-r">Open · more candidates →</span>
+          </div>
+          <input type="range" class="bar-slider" min="1" max="10" value="5" id="bar-slider" oninput="updateSlider(this.value)">
+          <div class="slider-ticks">
+            <span>Very strict</span>
+            <span>Strict</span>
+            <span>Balanced</span>
+            <span>Open</span>
+            <span>Very open</span>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:12px 14px;border-radius:10px;background:#f8fafc;border:0.5px solid #e2e8f0" id="bar-description">
+          <div style="font-size:12px;font-weight:500;color:#1e293b;margin-bottom:3px">Balanced (current)</div>
+          <div style="font-size:12px;color:#64748B;line-height:1.5">Candidates need at least 2 years of relevant experience, a fit score of 70+, and must match 3 of 5 key requirements. This is your current setting.</div>
+        </div>
+        <div class="criteria-chips">
+          <div style="font-size:11px;font-weight:500;color:#64748B;align-self:center;margin-right:4px">Required signals:</div>
+          <div class="crit-chip active"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#3C3489" stroke-width="1.8"><polyline points="1,5 4,8 9,2"/></svg>Customer service exp</div>
+          <div class="crit-chip active"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#3C3489" stroke-width="1.8"><polyline points="1,5 4,8 9,2"/></svg>Available evenings</div>
+          <div class="crit-chip"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#94a3b8" stroke-width="1.8"><line x1="2" y1="2" x2="8" y2="8"/><line x1="8" y1="2" x2="2" y2="8"/></svg>Food handler cert</div>
+          <div class="crit-chip"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#94a3b8" stroke-width="1.8"><line x1="2" y1="2" x2="8" y2="8"/><line x1="8" y1="2" x2="2" y2="8"/></svg>Within 5km</div>
+          <button style="font-size:11px;color:#5b3ff8;background:none;border:none;cursor:pointer" onclick="showToast('Edit requirements opened')">+ Add requirement</button>
+        </div>
+        <div class="status-legend">
+          <div style="font-size:11px;font-weight:500;color:#64748B;margin-right:4px">Of the 89 candidates:</div>
+          <div class="sl-item"><div class="sl-dot" style="background:#3B6D11"></div>34 actively looking</div>
+          <div class="sl-item"><div class="sl-dot" style="background:#EF9F27"></div>41 open to offers</div>
+          <div class="sl-item"><div class="sl-dot" style="background:#94a3b8"></div>14 currently employed</div>
+        </div>
+      </div>
+
+      <!-- PROJECTION -->
+      <div style="background:white;border-radius:14px;border:0.5px solid #e2e8f0;padding:18px 20px">
+        <div style="font-size:14px;font-weight:500;color:#1e293b;margin-bottom:12px">What changes at each level</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:grid;grid-template-columns:120px 80px 1fr;gap:12px;align-items:center;padding:9px 12px;background:#FCEBEB;border-radius:9px;border:0.5px solid #F09595">
+            <div style="font-size:12px;font-weight:500;color:#791F1F">Very strict</div>
+            <div style="font-size:20px;font-weight:500;color:#791F1F">8</div>
+            <div style="font-size:11px;color:#A32D2D">Top-tier only. Most candidates won't qualify. Good if you can wait for the right person.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:120px 80px 1fr;gap:12px;align-items:center;padding:9px 12px;background:#FAEEDA;border-radius:9px;border:0.5px solid #EF9F27">
+            <div style="font-size:12px;font-weight:500;color:#633806">Strict</div>
+            <div style="font-size:20px;font-weight:500;color:#633806">27</div>
+            <div style="font-size:11px;color:#854F0B">Solid candidates with most requirements met. Faster to fill than very strict.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:120px 80px 1fr;gap:12px;align-items:center;padding:9px 12px;background:#EEEDFE;border-radius:9px;border:0.5px solid #AFA9EC">
+            <div style="font-size:12px;font-weight:500;color:#3C3489">Balanced ← you</div>
+            <div style="font-size:20px;font-weight:500;color:#3C3489">89</div>
+            <div style="font-size:11px;color:#534AB7">Good balance. Most employers on this role use this setting. Average hire time: 4.2 days.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:120px 80px 1fr;gap:12px;align-items:center;padding:9px 12px;background:#EAF3DE;border-radius:9px;border:0.5px solid #97C459">
+            <div style="font-size:12px;font-weight:500;color:#27500A">Open</div>
+            <div style="font-size:20px;font-weight:500;color:#27500A">184</div>
+            <div style="font-size:11px;color:#3B6D11">Broader pool. Some candidates less experienced. Good for urgent roles or entry-level positions.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:120px 80px 1fr;gap:12px;align-items:center;padding:9px 12px;background:#f8fafc;border-radius:9px;border:0.5px solid #e2e8f0">
+            <div style="font-size:12px;font-weight:500;color:#475569">Very open</div>
+            <div style="font-size:20px;font-weight:500;color:#475569">340+</div>
+            <div style="font-size:11px;color:#64748B">Anyone who applied. No automatic filtering. You'll see all candidates and screen manually.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+var autopilotOn = false;
+
+var barDescriptions = {
+  1: {title:'Very strict', text:'Only candidates with all 5 required signals qualify. Expect fewer than 10 candidates — these are your best possible hires. Use this when you can afford to wait.'},
+  2: {title:'Very strict', text:'Only candidates with all 5 required signals qualify. Expect fewer than 10 candidates — these are your best possible hires. Use this when you can afford to wait.'},
+  3: {title:'Strict', text:'Candidates need at least 4 of 5 signals and a fit score of 80+. Good quality pool — expect around 27 qualified candidates.'},
+  4: {title:'Strict', text:'Candidates need at least 4 of 5 signals and a fit score of 80+. Good quality pool — expect around 27 qualified candidates.'},
+  5: {title:'Balanced (current)', text:'Candidates need at least 2 years of relevant experience, a fit score of 70+, and must match 3 of 5 key requirements. This is your current setting.'},
+  6: {title:'Balanced', text:'Slightly more open than your current setting. Adds about 30 candidates to the pool — mostly people with 1–2 years experience rather than 2+.'},
+  7: {title:'Open', text:'Broader pool — candidates need a fit score of 55+ and 2 of 5 signals. Good for urgent roles. Average quality is lower but volume is much higher.'},
+  8: {title:'Open', text:'Broader pool — candidates need a fit score of 55+ and 2 of 5 signals. Good for urgent roles. Average quality is lower but volume is much higher.'},
+  9: {title:'Very open', text:'Almost all applicants qualify. Minimal automatic filtering — you will need to screen manually. Only recommended if you need to fill urgently and have capacity to review.'},
+  10: {title:'Very open', text:'All applicants see the role as matching. No automatic bar. Maximum volume, manual screening required.'}
+};
+
+var counts = [8,8,27,27,89,120,184,220,300,340];
+
+function setPage(p) {
+  ['today','outreach','hiring-bar'].forEach(function(id){ document.getElementById('page-'+id).style.display='none'; });
+  document.getElementById('page-'+p).style.display='block';
+  document.querySelectorAll('.sb-item').forEach(function(el,i){
+    el.classList.toggle('on', (i===0&&p==='today')||(i===1&&p==='outreach')||(i===2&&p==='hiring-bar'));
+  });
+}
+
+function toggleAutopilot() {
+  autopilotOn = !autopilotOn;
+  var track = document.getElementById('ap-toggle');
+  var lbl = document.getElementById('ap-lbl');
+  var sbLbl = document.getElementById('ap-sb-lbl');
+  track.classList.toggle('on', autopilotOn);
+  lbl.textContent = autopilotOn ? 'On' : 'Off';
+  sbLbl.textContent = autopilotOn ? 'Autopilot · On ✓' : 'Autopilot · Off';
+  document.querySelector('.ap-title').textContent = autopilotOn ? 'Autopilot is on ✓' : 'Autopilot is off';
+  document.querySelector('.ap-sub').textContent = autopilotOn
+    ? 'Snagajob is automatically inviting qualified candidates as they apply. Check back tomorrow morning for new interviews.'
+    : 'Turn on autopilot and Snagajob will automatically invite qualified candidates to interview as they apply — you wake up to a full calendar.';
+  if (autopilotOn) showToast('Autopilot on — Snagajob will fill your calendar automatically');
+}
+
+function updateSlider(v) {
+  var count = counts[parseInt(v)-1];
+  document.getElementById('qual-count').textContent = count + (v=='10' ? '+' : '');
+  var desc = barDescriptions[parseInt(v)];
+  document.getElementById('bar-description').innerHTML =
+    '<div style="font-size:12px;font-weight:500;color:#1e293b;margin-bottom:3px">'+desc.title+'</div>'+
+    '<div style="font-size:12px;color:#64748B;line-height:1.5">'+desc.text+'</div>';
+}
+
+function inviteCandidate(btn, name) {
+  btn.textContent = 'Sent ✓';
+  btn.style.background = '#3B6D11';
+  btn.disabled = true;
+  showToast('Interview invite sent to ' + name);
+}
+
+function skipCandidate(id) {
+  var row = document.getElementById(id);
+  row.style.opacity = '0';
+  row.style.transition = 'opacity 0.3s';
+  setTimeout(function(){ row.style.display = 'none'; }, 300);
+}
+
+function inviteAll() {
+  document.querySelectorAll('.or-btn.or-invite').forEach(function(b){ b.textContent='Sent ✓'; b.style.background='#3B6D11'; b.disabled=true; });
+  showToast('Invites sent to all 8 candidates in queue');
+}
+
+function showToast(msg) {
+  var existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = '✓ ' + msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){t.remove();},300); }, 2500);
+}
+
+// ── PROFILE MODAL ────────────────────────────────────────────────────────────
+var profileData = {
+  jordan: {
+    initials:'JD', bg:'#EEEDFE', color:'#3C3489',
+    name:'Jordan Dasilva', hl:'Student · Toronto, ON',
+    loc:'0.8km from your store',
+    avail:'Available now · evenings & weekends',
+    availBg:'#EAF3DE', availBorder:'#97C459', availDot:'#3B6D11', availColor:'#27500A',
+    url:'snagajob.com/jordan-d',
+    bio:'Motivated student with proven leadership and community service experience. Raised $4,200 for school sports equipment as council treasurer, coordinated 6 volunteers at Scott Mission, and captained my basketball team for 3 seasons.',
+    inviteName:'Jordan'
+  },
+  aisha: {
+    initials:'AK', bg:'#E1F5EE', color:'#085041',
+    name:'Aisha Kamara', hl:'Retail experience · Etobicoke',
+    loc:'1.4km from your store',
+    avail:'Available now · mornings & weekdays',
+    availBg:'#EAF3DE', availBorder:'#97C459', availDot:'#3B6D11', availColor:'#27500A',
+    url:'snagajob.com/aisha-k',
+    bio:'2 years of retail experience at Shoppers Drug Mart. Food handler certified. Strong in customer-facing roles and comfortable working independently on a morning shift. Available immediately.',
+    inviteName:'Aisha'
+  },
+  marcus: {
+    initials:'ML', bg:'#FAEEDA', color:'#633806',
+    name:'Marcus Lee', hl:'Food service · Scarborough',
+    loc:'2.1km from your store',
+    avail:'Weekends only',
+    availBg:'#FAEEDA', availBorder:'#EF9F27', availDot:'#EF9F27', availColor:'#633806',
+    url:'snagajob.com/marcus-l',
+    bio:'Team lead experience in food service with a CPR certification. Led a crew of 5 during peak shifts at a high-volume restaurant. Strong communicator — known for keeping the team calm under pressure.',
+    inviteName:'Marcus'
+  }
+};
+
+var currentProfileKey = '';
+
+function openProfile(key) {
+  var d = profileData[key];
+  if (!d) return;
+  currentProfileKey = key;
+
+  document.getElementById('pm-av').textContent = d.initials;
+  document.getElementById('pm-av').style.background = d.bg;
+  document.getElementById('pm-av').style.color = d.color;
+  document.getElementById('pm-av').innerHTML = d.initials + '<div class="pm-av-ring"></div>';
+  document.getElementById('pm-name').textContent = d.name;
+  document.getElementById('pm-hl').textContent = d.hl;
+  document.getElementById('pm-loc').textContent = d.loc;
+  document.getElementById('pm-avail-pill').style.background = d.availBg;
+  document.getElementById('pm-avail-pill').style.border = '0.5px solid ' + d.availBorder;
+  document.getElementById('pm-avail-pill').querySelector('div').style.background = d.availDot;
+  document.getElementById('pm-avail-text').textContent = d.avail;
+  document.getElementById('pm-avail-text').style.color = d.availColor;
+  document.getElementById('pm-url').textContent = d.url;
+  document.getElementById('pm-bio').textContent = d.bio;
+  document.getElementById('pm-invite-btn').textContent = 'Send interview invite';
+  document.getElementById('pm-invite-btn').style.background = '#5b3ff8';
+  document.getElementById('pm-invite-btn').disabled = false;
+
+  document.getElementById('pm-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProfile() {
+  document.getElementById('pm-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function inviteFromProfile() {
+  var d = profileData[currentProfileKey];
+  var btn = document.getElementById('pm-invite-btn');
+  btn.textContent = 'Invite sent ✓';
+  btn.style.background = '#3B6D11';
+  btn.disabled = true;
+  if (d) showToast('Interview invite sent to ' + d.inviteName);
+}
+
+function saveFromProfile() {
+  var d = profileData[currentProfileKey];
+  if (d) showToast(d.inviteName + ' saved to shortlist');
+}
+
+</script>
+
+<!-- PROFILE MODAL -->
+<div class="profile-modal-overlay" id="pm-overlay" onclick="event.target===this&&closeProfile()">
+  <div class="profile-modal">
+    <div class="pm-chrome">
+      <div class="pm-dots">
+        <div class="pm-dot" style="background:#E24B4A"></div>
+        <div class="pm-dot" style="background:#EF9F27"></div>
+        <div class="pm-dot" style="background:#639922"></div>
+      </div>
+      <div class="pm-url" id="pm-url">snagajob.com/jordan-d</div>
+      <button class="pm-close" onclick="closeProfile()">×</button>
+    </div>
+    <div class="pm-body">
+
+      <!-- HERO -->
+      <div class="pm-hero">
+        <div class="pm-av" id="pm-av" style="background:#EEEDFE;color:#3C3489">JD<div class="pm-av-ring"></div></div>
+        <div>
+          <div class="pm-name" id="pm-name">Jordan Dasilva</div>
+          <div class="pm-hl" id="pm-hl">Student · Toronto, ON</div>
+          <div class="pm-loc"><svg width="9" height="9" viewBox="0 0 14 14" fill="none" stroke="#64748B" stroke-width="1.3"><path d="M7 1a4 4 0 0 1 4 4c0 3-4 8-4 8S3 8 3 5a4 4 0 0 1 4-4z"/><circle cx="7" cy="5" r="1.5"/></svg><span id="pm-loc">0.8km from your store</span></div>
+          <div class="pm-avail-pill" id="pm-avail-pill" style="background:#EAF3DE;border:0.5px solid #97C459"><div style="width:6px;height:6px;border-radius:50%;background:#3B6D11"></div><span style="color:#27500A;font-size:10px;font-weight:500" id="pm-avail-text">Available now · evenings & weekends</span></div>
+        </div>
+      </div>
+
+      <!-- PERSONALITY BADGES -->
+      <div class="pm-badges" id="pm-badges">
+        <div class="pm-badge" style="background:#EEEDFE;color:#3C3489">Natural communicator</div>
+        <div class="pm-badge" style="background:#E1F5EE;color:#085041">Team-first</div>
+        <div class="pm-badge" style="background:#FAEEDA;color:#633806">Fast learner</div>
+      </div>
+
+      <!-- BIO -->
+      <div class="pm-bio" id="pm-bio">Motivated student with proven leadership and community service experience. Raised $4,200 for school sports equipment as council treasurer, coordinated 6 volunteers at Scott Mission Food Bank, and captained my basketball team for 3 seasons.</div>
+
+      <!-- CAREER TIMELINE -->
+      <div>
+        <div class="pm-sec-t">Career journey</div>
+        <div class="pm-tl">
+          <div class="pm-tl-line"></div>
+          <div class="pm-tl-item" id="pm-tl-items">
+            <div class="pm-tl-dot" style="background:#5b3ff8"></div>
+            <div><div class="pm-tl-year">2023 – present</div><div class="pm-tl-title">Student council treasurer</div><div class="pm-tl-sub">Westview Secondary School</div><div class="pm-tl-detail">Managed $12k budget · organised 8 events · raised $4,200 for sports equipment</div></div>
+          </div>
+          <div class="pm-tl-item">
+            <div class="pm-tl-dot" style="background:#1D9E75"></div>
+            <div><div class="pm-tl-year">Summer 2023 · 3 months</div><div class="pm-tl-title">Food bank volunteer</div><div class="pm-tl-sub">Scott Mission · Toronto</div><div class="pm-tl-detail">Served 80+ clients per shift · coordinated team of 6 volunteers</div></div>
+          </div>
+          <div class="pm-tl-item">
+            <div class="pm-tl-dot" style="background:#EF9F27"></div>
+            <div><div class="pm-tl-year">2021 – present</div><div class="pm-tl-title">Basketball team captain · point guard</div><div class="pm-tl-sub">Westview competitive league · 4 seasons</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CERTIFICATIONS -->
+      <div>
+        <div class="pm-sec-t">Certifications</div>
+        <div class="pm-cert"><div class="pm-cert-ico" style="background:#EAF3DE"><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#27500A" stroke-width="1.5"><path d="M9 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg></div><div style="flex:1"><div class="pm-cert-name">Food handler certification</div><div class="pm-cert-issuer">Ontario Food Safety · valid until Dec 2025</div></div><div style="font-size:9px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:5px;padding:2px 6px">Current</div></div>
+        <div class="pm-cert"><div class="pm-cert-ico" style="background:#E6F1FB"><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#0C447C" stroke-width="1.5"><path d="M9 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg></div><div style="flex:1"><div class="pm-cert-name">First aid & CPR — level C</div><div class="pm-cert-issuer">Red Cross Canada · valid until Mar 2026</div></div><div style="font-size:9px;font-weight:500;background:#EAF3DE;color:#27500A;border-radius:5px;padding:2px 6px">Current</div></div>
+      </div>
+
+      <!-- SKILLS -->
+      <div>
+        <div class="pm-sec-t">Skills</div>
+        <div class="pm-sk-wrap"><span class="pm-sk">Teamwork</span><span class="pm-sk">Communication</span><span class="pm-sk">Customer service</span><span class="pm-sk">Event coordination</span><span class="pm-sk">Food handling</span><span class="pm-sk">Cash handling</span><span class="pm-sk lang">English (fluent)</span><span class="pm-sk lang">Portuguese (conversational)</span></div>
+      </div>
+
+      <!-- RECOMMENDATIONS -->
+      <div>
+        <div class="pm-sec-t">Recommendations</div>
+        <div class="pm-rec"><div class="pm-rec-top"><div class="pm-rec-av" style="background:#EEEDFE;color:#3C3489">MS</div><div><div class="pm-rec-name">Maria Santos</div><div class="pm-rec-role">Volunteer coordinator · Scott Mission</div></div><div class="pm-rec-rel" style="background:#E1F5EE;color:#085041">Supervisor</div></div><div class="pm-rec-body">"Jordan was one of our most dependable volunteers. Always early, always positive, and other volunteers naturally looked to them for direction. I'd hire Jordan without hesitation."</div><span class="pm-rec-tag">Re: Scott Mission volunteer role</span></div>
+        <div class="pm-rec"><div class="pm-rec-top"><div class="pm-rec-av" style="background:#FAEEDA;color:#633806">CT</div><div><div class="pm-rec-name">Coach Thompson</div><div class="pm-rec-role">Basketball coach · Westview Secondary</div></div><div class="pm-rec-rel" style="background:#EEEDFE;color:#3C3489">Coach</div></div><div class="pm-rec-body">"On the court Jordan's a leader — calm under pressure, communicates clearly, picks people up. Those qualities don't switch off."</div><span class="pm-rec-tag">Re: Basketball team · point guard</span></div>
+      </div>
+
+      <!-- PREFERENCES -->
+      <div>
+        <div class="pm-sec-t">Work preferences</div>
+        <div class="pm-pref-row"><span class="pm-prefl">Hours</span><span class="pm-prefv">Part-time · 15–25 hrs/week</span></div>
+        <div class="pm-pref-row"><span class="pm-prefl">Schedule</span><span class="pm-prefv">Evenings & weekends</span></div>
+        <div class="pm-pref-row"><span class="pm-prefl">Max commute</span><span class="pm-prefv">Within 5km</span></div>
+        <div class="pm-pref-row"><span class="pm-prefl">Available from</span><span class="pm-prefv">Immediately</span></div>
+      </div>
+
+      <!-- VERIFIED -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 9px;background:#f8fafc;border-radius:7px">
+        <div style="display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:500;color:#3C3489"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#3C3489" stroke-width="1.8"><polyline points="2,6 5,9 10,3"/></svg> Verified by Snagajob</div>
+        <div style="font-size:9px;color:#94a3b8">Updated Apr 2026</div>
+      </div>
+
+    </div>
+    <div class="pm-footer">
+      <button class="pm-fbtn pm-primary" id="pm-invite-btn" onclick="inviteFromProfile()">Send interview invite</button>
+      <button class="pm-fbtn pm-outline" onclick="saveFromProfile()">Save to shortlist</button>
+      <button class="pm-fbtn pm-outline" style="flex:0.5" onclick="closeProfile()">Close</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

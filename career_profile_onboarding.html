@@ -253,7 +253,13 @@
     .chat-send { width: 36px; height: 36px; background: var(--purple); border: none; border-radius: 50%; color: white; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
     /* Welcome */
-    .welcome-hero { text-align: center; padding: 28px 0 32px; }
+    .welcome-hero { text-align: center; padding: 28px 0 20px; }
+    .welcome-benefits { display: flex; flex-direction: column; margin-bottom: 20px; }
+    .wb-item { display: flex; align-items: flex-start; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+    .wb-item:last-child { border-bottom: none; }
+    .wb-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; line-height: 1; }
+    .wb-name { font-size: 14px; font-weight: 500; color: var(--dark); margin-bottom: 2px; }
+    .wb-desc { font-size: 12px; color: var(--muted); line-height: 1.45; }
     .welcome-emoji { font-size: 56px; margin-bottom: 16px; }
     .upload-area { border: 1.5px dashed var(--purple-mid); border-radius: var(--r-card); background: var(--purple-light); padding: 16px; text-align: center; cursor: pointer; transition: all 0.15s; margin-bottom: 10px; }
     .upload-area:hover { background: var(--purple-mid); }
@@ -296,9 +302,123 @@
 
     @keyframes flash { 0% { background: var(--green-bg); } 100% { background: transparent; } }
     .flash { animation: flash 1.2s ease-out; }
+
+    /* ── Prototype sidebar layout ── */
+    body { align-items: flex-start !important; padding: 2.5rem 2rem !important; }
+    .proto-sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 2.5rem;
+      padding-top: 0.5rem;
+    }
+    .proto-sidebar-label {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .proto-sidebar-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--dark);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .proto-sidebar-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--purple);
+      background: var(--purple-light);
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-bottom: 28px;
+    }
+    .proto-flows-label {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+    .proto-flows {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+    }
+    .proto-flows li {
+      display: flex;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(26,16,53,0.07);
+    }
+    .proto-flows li:last-child { border-bottom: none; }
+    .proto-flow-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--purple-light);
+      color: var(--purple);
+      font-size: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .proto-flow-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--dark);
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+    .proto-flow-desc {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
+
+<aside class="proto-sidebar">
+  <p class="proto-sidebar-label">Jobseeker Experience</p>
+  <h2 class="proto-sidebar-name">Career Profile<br>Onboarding</h2>
+  <span class="proto-sidebar-badge">Mobile · Web</span>
+  <p class="proto-flows-label">Key Benefits</p>
+  <ol class="proto-flows">
+    <li>
+      <span class="proto-flow-num">1</span>
+      <div>
+        <p class="proto-flow-name">A profile that lives with you</p>
+        <p class="proto-flow-desc">No more lost resume files. Always online, always current, and shareable with a single link — from any device, at any time.</p>
+      </div>
+    </li>
+    <li>
+      <span class="proto-flow-num">2</span>
+      <div>
+        <p class="proto-flow-name">AI that elevates your voice</p>
+        <p class="proto-flow-desc">Refines and strengthens your own words — not generic templates. Plus plain-English coaching on exactly what to improve and why it improves your chances.</p>
+      </div>
+    </li>
+    <li>
+      <span class="proto-flow-num">3</span>
+      <div>
+        <p class="proto-flow-name">Know exactly where you stand</p>
+        <p class="proto-flow-desc">See how you rank against other candidates, how many jobs you qualify for today, and the specific steps to unlock direct interview scheduling — no application black holes.</p>
+      </div>
+    </li>
+  </ol>
+</aside>
+
 <div class="app">
   <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
 
@@ -309,6 +429,31 @@
       <h1>Your career<br>starts here</h1>
       <p class="subtitle" style="margin-bottom:0">Build a shareable profile in 3 minutes —<br>no work experience required</p>
     </div>
+
+    <div class="welcome-benefits">
+      <div class="wb-item">
+        <span class="wb-icon">🔗</span>
+        <div>
+          <p class="wb-name">A profile that lives with you</p>
+          <p class="wb-desc">Always online, always current — share it with a single link and never lose it to a file on your desktop</p>
+        </div>
+      </div>
+      <div class="wb-item">
+        <span class="wb-icon">✨</span>
+        <div>
+          <p class="wb-name">AI that elevates your voice</p>
+          <p class="wb-desc">Refines and strengthens your own words — not generic templates. Plus clear coaching on what to add and why it matters</p>
+        </div>
+      </div>
+      <div class="wb-item">
+        <span class="wb-icon">📊</span>
+        <div>
+          <p class="wb-name">Know exactly where you stand</p>
+          <p class="wb-desc">See how you rank against other candidates, which jobs you qualify for today, and the steps to unlock direct interview scheduling</p>
+        </div>
+      </div>
+    </div>
+
     <div class="upload-area" onclick="handleUpload()">
       <div class="upload-area-icon">📄</div>
       <div class="upload-area-text">Already have a resume? Upload it</div>
@@ -316,7 +461,7 @@
     </div>
     <div class="divider">or start from scratch</div>
     <button class="btn-primary" onclick="goTo('info')">Build my profile →</button>
-    <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:18px">Free · 3 minutes · Used by 2M+ jobseekers</p>
+    <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:18px">Free · Takes about 3 minutes</p>
   </div>
 
   <!-- ═══════════ INFO ═══════════ -->
