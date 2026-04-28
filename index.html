@@ -192,6 +192,25 @@
 
     .card:hover .card-cta svg { transform: translateX(3px); }
 
+    /* ── Hero purpose ── */
+    .hero-purpose {
+      margin-top: 20px;
+      font-size: 0.88rem;
+      color: var(--ink);
+      line-height: 1.7;
+      max-width: 420px;
+      padding: 16px 20px;
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* ── Section separator ── */
+    .cards-section + .cards-section {
+      border-top: 1px solid var(--rule);
+      padding-top: 48px;
+    }
+
     /* ── Footer ── */
     footer {
       border-top: 1px solid var(--rule);
@@ -204,6 +223,21 @@
       gap: 16px;
       flex-wrap: wrap;
     }
+
+    .feedback-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid var(--accent-light);
+      padding: 6px 14px;
+      border-radius: 100px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .feedback-btn:hover { background: var(--accent-light); border-color: var(--accent); }
 
     /* ── Section note ── */
     .section-header {
@@ -258,12 +292,13 @@
         <p class="hero-label">Overview</p>
         <h1>Snagajob <em>Reimagined.</em></h1>
         <p>A collection of interactive prototypes exploring a new model for hourly job matching — built around the worker's profile, not the job listing.</p>
+        <p class="hero-purpose">These prototypes represent a north star for what hourly job matching could become — a shared vision for the team to align on and a foundation to build towards.</p>
       </div>
 
       <div class="cards-section">
         <div class="section-header fade-up">
-          <p class="section-label">Prototypes — 3</p>
-          <span class="section-note">Jobseeker experiences optimized for mobile web &amp; app</span>
+          <p class="section-label">Jobseeker Experience — 2</p>
+          <span class="section-note">Optimized for mobile web &amp; app</span>
         </div>
 
         <div class="cards fade-up">
@@ -296,10 +331,20 @@
             </div>
           </a>
 
+        </div>
+      </div>
+
+      <div class="cards-section">
+        <div class="section-header fade-up">
+          <p class="section-label">Employer Experience — 1</p>
+        </div>
+
+        <div class="cards fade-up">
+
           <a class="card"
-             href="https://stvph-jobs.github.io/snagajob-onboarding-prototype/employer_dashboard_1.html"
+             href="https://stvph-jobs.github.io/snagajob-onboarding-prototype/employer_dashboard_6.html"
              target="_blank" rel="noopener">
-            <div class="card-number">03</div>
+            <div class="card-number">01</div>
             <h2 class="card-title">Employer Dashboard</h2>
             <p class="card-desc">An employer-side prototype exploring AI-assisted hiring — candidate matching, outreach automation, interview scheduling, and profile-based qualification. Desktop experience.</p>
             <div class="card-cta">
@@ -316,7 +361,7 @@
 
     <footer>
       <span>Snagajob Design</span>
-      <span>stvph-jobs · GitHub</span>
+      <a class="feedback-btn" href="https://www.notion.so/jobget/34fd0c9b507480df8e54c52cc68e96e4?pvs=106" target="_blank" rel="noopener">Leave feedback →</a>
     </footer>
 
   </div>

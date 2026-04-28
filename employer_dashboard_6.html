@@ -123,7 +123,7 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
 .os-header{padding:14px 18px;border-bottom:0.5px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;background:#f8fafc}
 .os-title{font-size:13px;font-weight:500;color:#1e293b}
 .os-sub{font-size:11px;color:#64748B;margin-top:1px}
-.os-automate{font-size:11px;font-weight:500;color:#5b3ff8;cursor:pointer;display:flex;align-items:center;gap:4px}
+.cl-automate{font-size:11px;font-weight:500;color:#5b3ff8;cursor:pointer;display:flex;align-items:center;gap:4px}
 .outreach-row{padding:12px 18px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid #f1f5f9;transition:background 0.15s;cursor:pointer}
 .outreach-row:last-child{border-bottom:none}
 .outreach-row:hover{background:#fafbff}
@@ -153,6 +153,57 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
 .section-title{font-size:15px;font-weight:500;color:#1e293b}
 .section-sub{font-size:12px;color:#64748B;margin-top:2px}
 .section-action{font-size:12px;font-weight:500;color:#5b3ff8;cursor:pointer;background:none;border:none;display:flex;align-items:center;gap:4px}
+
+
+/* ── PLAN TOGGLE ── */
+.plan-toggle{display:flex;border:0.5px solid rgba(255,255,255,0.2);border-radius:20px;overflow:hidden;background:rgba(255,255,255,0.05)}
+.pt-btn{font-size:11px;font-weight:500;padding:4px 12px;cursor:pointer;border:none;background:none;color:#AFA9EC;transition:all 0.15s}
+.pt-btn.on{background:#5b3ff8;color:white}
+
+/* ── FREE MODE STYLES ── */
+.free-only{display:none !important}
+body.free-mode .free-only{display:block !important}
+body.free-mode .free-only.upgrade-callout{display:flex !important}
+body.free-mode .free-only.missing-banner{display:flex !important}
+body.free-mode .free-only.section-sub{display:block !important}
+body.free-mode .free-only.cl-lock-strip{display:flex !important}
+body.free-mode .pro-only{display:none !important}
+.locked-blur{position:relative}
+.locked-blur .blur-content{filter:blur(3px);pointer-events:none;user-select:none}
+.lock-gate{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(248,250,252,0.82);backdrop-filter:blur(1px);border-radius:inherit;z-index:10}
+.lock-gate-inner{text-align:center;padding:12px 20px}
+.lg-icon{width:32px;height:32px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 7px}
+.lg-title{font-size:12px;font-weight:500;color:#1e293b;margin-bottom:4px}
+.lg-sub{font-size:11px;color:#64748B;line-height:1.4;margin-bottom:8px}
+.lg-btn{font-size:11px;font-weight:500;padding:5px 14px;border-radius:8px;background:#5b3ff8;color:white;border:none;cursor:pointer}
+
+/* WHAT YOU'RE MISSING banner (free only) */
+.missing-banner{background:#1A1035;border-radius:14px;padding:14px 18px;display:flex;align-items:flex-start;gap:12px}
+.mb-ico{width:32px;height:32px;border-radius:9px;background:rgba(239,159,39,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mb-content{flex:1}
+.mb-title{font-size:13px;font-weight:500;color:white;margin-bottom:4px}
+.mb-items{display:flex;flex-direction:column;gap:4px}
+.mb-item{font-size:11px;color:#AFA9EC;display:flex;align-items:center;gap:6px}
+.mb-item-dot{width:4px;height:4px;border-radius:50%;background:#EF9F27;flex-shrink:0}
+.mb-cta{font-size:11px;font-weight:500;padding:7px 14px;border-radius:9px;background:#5b3ff8;color:white;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;align-self:center}
+
+/* INLINE UPGRADE CALLOUTS */
+.upgrade-callout{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:10px;padding:10px 13px;display:flex;align-items:center;gap:10px}
+.uc-icon{width:26px;height:26px;border-radius:7px;background:#5b3ff8;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.uc-text{flex:1;font-size:11px;color:#3C3489;line-height:1.5}
+.uc-text strong{color:#26215C}
+.uc-btn{font-size:10px;font-weight:500;padding:5px 11px;border-radius:7px;background:#5b3ff8;color:white;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0}
+
+/* Candidate library specific */
+.cl-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cl-search{flex:1;max-width:320px;padding:8px 13px;background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:10px;font-size:12px;color:#1e293b;outline:none}
+.cl-search:focus{border-color:#5b3ff8}
+.cl-filters{display:flex;gap:6px}
+.cl-filter{font-size:11px;font-weight:500;padding:5px 11px;border-radius:20px;border:0.5px solid #e2e8f0;background:white;color:#64748B;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:4px}
+.cl-filter.on{background:#5b3ff8;color:white;border-color:#5b3ff8}
+.cl-count-bar{display:flex;align-items:center;gap:10px;padding:10px 0}
+.cl-count-item{font-size:11px;color:#64748B;display:flex;align-items:center;gap:5px}
+.cl-show-more{display:flex}
 
 /* ── TOAST ── */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:white;font-size:12px;font-weight:500;padding:10px 18px;border-radius:20px;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:opacity 0.3s;pointer-events:none}
@@ -214,6 +265,13 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
 .pm-primary:hover{background:#4a2fe0}
 .pm-outline{background:#f1f5f9;color:#64748B;border:0.5px solid #e2e8f0}
 
+/* ── Feedback ── */
+.sb-feedback{margin-top:auto;padding:16px 16px 8px}
+.sb-feedback-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin-bottom:5px}
+.sb-feedback-desc{font-size:11px;color:#64748B;line-height:1.5;margin-bottom:10px}
+.sb-feedback-btn{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:#5b3ff8;text-decoration:none;background:#EEEDFE;border:0.5px solid #AFA9EC;padding:6px 12px;border-radius:20px;transition:background 0.15s}
+.sb-feedback-btn:hover{background:#CECBF6}
+
 </style>
 </head>
 <body>
@@ -227,7 +285,11 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
     <button class="nav-tab">Analytics</button>
   </div>
   <div class="nav-right">
-    <div class="nav-plan">Pro plan · Target Toronto</div>
+    <div class="plan-toggle">
+      <button class="pt-btn on" id="pt-pro" onclick="setPlan('pro')">Pro</button>
+      <button class="pt-btn" id="pt-free" onclick="setPlan('free')">Free</button>
+    </div>
+    <div class="nav-plan" id="nav-plan-badge">Pro plan · Target Toronto</div>
     <div class="nav-av">TM</div>
   </div>
 </nav>
@@ -242,10 +304,10 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
       Interviews
       <span class="sb-badge green">3</span>
     </button>
-    <button class="sb-item" onclick="setPage('outreach')">
+    <button class="sb-item" onclick="setPage('candidates')">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2L9 7M14 2H9M14 2V7"/><path d="M6 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"/></svg>
-      Outreach queue
-      <span class="sb-badge">8</span>
+      Candidate library
+      <span class="sb-badge">89</span>
     </button>
     <button class="sb-item" onclick="setPage('hiring-bar')">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="8" r="2"/><line x1="1" y1="8" x2="3" y2="8"/><line x1="7" y1="8" x2="15" y2="8"/><circle cx="12" cy="4" r="2"/><line x1="1" y1="4" x2="10" y2="4"/><line x1="14" y1="4" x2="15" y2="4"/></svg>
@@ -274,6 +336,12 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1v3M8 12v3M3.5 3.5l2 2M10.5 10.5l2 2M1 8h3M12 8h3M3.5 12.5l2-2M10.5 5.5l2-2"/></svg>
       <span id="ap-sb-lbl">Autopilot · Off</span>
     </button>
+    <div class="sb-divider"></div>
+    <div class="sb-feedback">
+      <p class="sb-feedback-lbl">Share your thoughts</p>
+      <p class="sb-feedback-desc">Help shape these prototypes — your feedback goes directly to the team.</p>
+      <a class="sb-feedback-btn" href="https://www.notion.so/jobget/34fd0c9b507480df8e54c52cc68e96e4?pvs=106" target="_blank" rel="noopener">Leave feedback →</a>
+    </div>
   </aside>
 
   <!-- MAIN CONTENT -->
@@ -281,6 +349,23 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
 
     <!-- TODAY VIEW -->
     <div id="page-today">
+
+      <!-- FREE: MISSING BANNER -->
+      <div class="missing-banner free-only" style="margin-bottom:0">
+        <div class="mb-ico">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#EF9F27" stroke-width="1.6"><rect x="4" y="7" width="8" height="7" rx="1"/><path d="M6 7V5a2 2 0 0 1 4 0v2"/></svg>
+        </div>
+        <div class="mb-content">
+          <div class="mb-title">What Pro would have given you today</div>
+          <div class="mb-items">
+            <div class="mb-item"><div class="mb-item-dot"></div>AI prep briefs and suggested questions for each of your 3 interviews</div>
+            <div class="mb-item"><div class="mb-item-dot"></div>Autopilot could have filled tomorrow's calendar automatically</div>
+            <div class="mb-item"><div class="mb-item-dot"></div>86 more candidates in your library — you can only see 3 on the free plan</div>
+          </div>
+        </div>
+        <button class="mb-cta" onclick="setPlan('pro');showToast('Welcome to Pro — all features unlocked')">Upgrade to Pro</button>
+      </div>
+
       <div class="date-header">
         <div>
           <div class="date-lbl">Friday, April 25, 2026</div>
@@ -288,7 +373,7 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
         </div>
         <div class="dh-right">
           <button class="dh-btn dh-outline" onclick="showToast('Opening calendar sync settings')">Sync calendar</button>
-          <button class="dh-btn dh-primary" onclick="setPage('outreach')">Find more candidates →</button>
+          <button class="dh-btn dh-primary" onclick="setPage('candidates')">Find more candidates →</button>
         </div>
       </div>
 
@@ -307,12 +392,20 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
         </div>
       </div>
 
+      <!-- FREE: AUTOPILOT UPGRADE CALLOUT -->
+      <div class="upgrade-callout free-only">
+        <div class="uc-icon"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.6"><path d="M7 1v2M7 11v2M2.5 2.5l1.5 1.5M10 10l1.5 1.5M1 7h2M11 7h2M2.5 11.5L4 10M10 4l1.5-1.5"/></svg></div>
+        <div class="uc-text"><strong>Autopilot is a Pro feature.</strong> Turn it on and Snagajob automatically invites qualified candidates — you wake up to a full calendar.</div>
+        <button class="uc-btn" onclick="setPlan('pro')">Unlock →</button>
+      </div>
+
       <!-- INTERVIEW SCHEDULE -->
       <div>
         <div class="section-hdr" style="margin-bottom:12px">
           <div>
             <div class="section-title">Today's interviews · Team member · Bloor St</div>
-            <div class="section-sub">All pre-qualified · each cleared your hiring bar before booking</div>
+            <div class="section-sub pro-only">All pre-qualified · each cleared your hiring bar before booking</div>
+            <div class="section-sub free-only">Showing 1 of 3 interviews · <span style="color:#5b3ff8;cursor:pointer;font-weight:500" onclick="setPlan('pro')">upgrade to see all</span></div>
           </div>
           <button class="section-action" onclick="showToast('Opening full interview calendar')">View calendar →</button>
         </div>
@@ -344,6 +437,7 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
           </div>
 
           <!-- UPCOMING — NOW -->
+          <div class='pro-only' style='display:contents'>
           <div class="interview-card" style="border-color:#5b3ff8;box-shadow:0 0 0 2px rgba(91,63,248,0.15)" onclick="openProfile('aisha')">
             <div class="ic-time-bar" style="background:#EEEDFE">
               <div class="ic-time" style="color:#3C3489">11:00 – 11:30am</div>
@@ -407,6 +501,15 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
         </div>
       </div>
 
+          </div><!-- end pro-only interview cards -->
+
+      <!-- FREE: MORE INTERVIEWS CALLOUT -->
+      <div class="upgrade-callout free-only" style="margin-top:-8px">
+        <div class="uc-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg></div>
+        <div class="uc-text"><strong>2 more interviews today</strong> that you can't access on the free plan. Upgrade Pro to see all interviews, AI prep briefs, and suggested questions.</div>
+        <button class="uc-btn" onclick="setPlan('pro')">Upgrade →</button>
+      </div>
+
       <!-- NEXT DAY PREVIEW -->
       <div>
         <div class="section-hdr" style="margin-bottom:12px">
@@ -414,27 +517,27 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
             <div class="section-title">Tomorrow — Saturday, April 26</div>
             <div class="section-sub">No interviews scheduled yet</div>
           </div>
-          <button class="section-action" onclick="setPage('outreach')">Find candidates to invite →</button>
+          <button class="section-action" onclick="setPage('candidates')">Find candidates to invite →</button>
         </div>
         <div class="empty-day">
           <div class="empty-icon">
             <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="3" y="4" width="16" height="15" rx="2"/><path d="M8 2v4M16 2v4M3 9h16"/></svg>
           </div>
           <div style="font-size:13px;font-weight:500;color:#1e293b">No interviews on Saturday yet</div>
-          <div style="font-size:12px;color:#64748B;max-width:280px;line-height:1.5">Your outreach queue has 8 qualified candidates who haven't been invited yet. Want AI to send invites automatically?</div>
+          <div style="font-size:12px;color:#64748B;max-width:280px;line-height:1.5">Your candidate library has 8 qualified candidates who haven't been invited yet. Want AI to send invites automatically?</div>
           <div style="display:flex;gap:8px">
             <button class="dh-btn dh-primary" onclick="toggleAutopilot()">Turn on autopilot</button>
-            <button class="dh-btn dh-outline" onclick="setPage('outreach')">Review queue manually</button>
+            <button class="dh-btn dh-outline" onclick="setPage('candidates')">Review queue manually</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- OUTREACH VIEW -->
-    <div id="page-outreach" style="display:none">
+    <!-- CANDIDATE LIBRARY -->
+    <div id="page-candidates" style="display:none">
       <div class="date-header">
         <div>
-          <div class="date-lbl">Outreach queue · Team member · Bloor St</div>
+          <div class="date-lbl">Candidate library · Team member · Bloor St</div>
           <div class="date-title">8 candidates AI suggests inviting</div>
         </div>
         <div class="dh-right">
@@ -443,14 +546,14 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
         </div>
       </div>
 
-      <!-- HIRING BAR SUMMARY -->
-      <div style="background:white;border-radius:12px;border:0.5px solid #e2e8f0;padding:14px 18px;display:flex;align-items:center;gap:16px">
+      <!-- HIRING BAR + STATUS SUMMARY -->
+      <div style="background:white;border-radius:12px;border:0.5px solid #e2e8f0;padding:14px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
         <div>
-          <div style="font-size:11px;color:#64748B;margin-bottom:2px">Current hiring bar</div>
+          <div style="font-size:11px;color:#64748B;margin-bottom:2px">Hiring bar</div>
           <div style="font-size:13px;font-weight:500;color:#1e293b">Balanced · <span style="color:#5b3ff8">89 candidates qualify</span></div>
         </div>
         <div style="height:30px;width:0.5px;background:#e2e8f0"></div>
-        <div style="display:flex;gap:14px">
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
           <div style="font-size:11px;color:#64748B;display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:#3B6D11"></div>Actively looking: <strong style="color:#1e293b">34</strong></div>
           <div style="font-size:11px;color:#64748B;display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:#EF9F27"></div>Open to offers: <strong style="color:#1e293b">41</strong></div>
           <div style="font-size:11px;color:#64748B;display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:#94a3b8"></div>Currently employed: <strong style="color:#1e293b">14</strong></div>
@@ -458,16 +561,23 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
         <button class="dh-btn dh-outline" style="margin-left:auto" onclick="setPage('hiring-bar')">Adjust hiring bar →</button>
       </div>
 
+      <!-- FREE: LIBRARY LOCK CALLOUT -->
+      <div class="upgrade-callout free-only">
+        <div class="uc-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.5"><rect x="4" y="7" width="8" height="7" rx="1"/><path d="M6 7V5a2 2 0 0 1 4 0v2"/></svg></div>
+        <div class="uc-text"><strong>You're seeing 3 of 89 candidates.</strong> Upgrade to Pro to browse the full library, see AI summaries, filter by status, and send bulk invites.</div>
+        <button class="uc-btn" onclick="setPlan('pro')">Unlock →</button>
+      </div>
+
       <!-- OUTREACH QUEUE -->
       <div class="outreach-section">
         <div class="os-header">
           <div>
-            <div class="os-title">AI-suggested outreach · sorted by likelihood to accept</div>
+            <div class="os-title">AI-suggested candidates · sorted by likelihood to accept · sorted by likelihood to accept</div>
             <div class="os-sub">Candidates most likely to respond quickly based on activity and profile signals</div>
           </div>
-          <button class="os-automate" onclick="toggleAutopilot()">
+          <button class="cl-automate" onclick="toggleAutopilot()">
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1v2M7 11v2M2.5 2.5l1.5 1.5M10 10l1.5 1.5M1 7h2M11 7h2M2.5 11.5L4 10M10 4l1.5-1.5"/></svg>
-            Automate this
+            Auto-invite
           </button>
         </div>
 
@@ -511,7 +621,7 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
           </div>
         </div>
 
-        <!-- Candidate 3 - open to offers (passively employed) -->
+        <div class="pro-only"><!-- Candidate 3 - open to offers (passively employed) -->
         <div class="outreach-row" id="or2">
           <div class="or-av" style="background:#EEEDFE;color:#3C3489">KM</div>
           <div class="or-info">
@@ -555,7 +665,9 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
           </div>
         </div>
 
-        <div style="padding:10px 18px;background:#f8fafc;border-top:0.5px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between">
+        </div><!-- end pro-only rows -->
+        <div class="free-only cl-lock-strip" style="padding:10px 18px;background:#EEEDFE;border-top:0.5px solid #AFA9EC;align-items:center;justify-content:space-between"><span style="font-size:11px;color:#3C3489">+ 86 more candidates locked</span><button class="uc-btn" onclick="setPlan('pro')" style="font-size:10px;padding:4px 10px">Unlock with Pro</button></div>
+        <div class="pro-only cl-show-more" style="padding:10px 18px;background:#f8fafc;border-top:0.5px solid #e2e8f0;align-items:center;justify-content:space-between">
           <div style="font-size:11px;color:#64748B">+ 4 more candidates in queue</div>
           <button style="font-size:11px;font-weight:500;color:#5b3ff8;background:none;border:none;cursor:pointer" onclick="showToast('Showing all 8 candidates')">Show all →</button>
         </div>
@@ -658,6 +770,29 @@ input[type=range].bar-slider{width:100%;accent-color:#5b3ff8;height:6px;cursor:p
 
 <script>
 var autopilotOn = false;
+var currentPlan = 'pro';
+
+function setPlan(plan) {
+  currentPlan = plan;
+  var body = document.body;
+  var ptPro = document.getElementById('pt-pro');
+  var ptFree = document.getElementById('pt-free');
+  var badge = document.getElementById('nav-plan-badge');
+
+  body.classList.toggle('free-mode', plan === 'free');
+  ptPro.classList.toggle('on', plan === 'pro');
+  ptFree.classList.toggle('on', plan === 'free');
+  badge.textContent = plan === 'pro' ? 'Pro plan · Target Toronto' : 'Free plan · 3 of 3 views used';
+  badge.style.background = plan === 'pro' ? 'rgba(91,63,248,0.3)' : 'rgba(239,159,39,0.2)';
+  badge.style.color = plan === 'pro' ? '#AFA9EC' : '#EF9F27';
+  badge.style.border = plan === 'pro' ? '0.5px solid rgba(91,63,248,0.4)' : '0.5px solid rgba(239,159,39,0.3)';
+  if (plan === 'pro') showToast('Switched to Pro view');
+  else showToast('Switched to Free view — showing locked experience');
+}
+
+function togClFilter(el) {
+  el.classList.toggle('on');
+}
 
 var barDescriptions = {
   1: {title:'Very strict', text:'Only candidates with all 5 required signals qualify. Expect fewer than 10 candidates — these are your best possible hires. Use this when you can afford to wait.'},
@@ -675,10 +810,14 @@ var barDescriptions = {
 var counts = [8,8,27,27,89,120,184,220,300,340];
 
 function setPage(p) {
-  ['today','outreach','hiring-bar'].forEach(function(id){ document.getElementById('page-'+id).style.display='none'; });
-  document.getElementById('page-'+p).style.display='block';
+  ['today','candidates','hiring-bar'].forEach(function(id){
+    var el = document.getElementById('page-'+id);
+    if (el) el.style.display='none';
+  });
+  var target = document.getElementById('page-'+p);
+  if (target) target.style.display='block';
   document.querySelectorAll('.sb-item').forEach(function(el,i){
-    el.classList.toggle('on', (i===0&&p==='today')||(i===1&&p==='outreach')||(i===2&&p==='hiring-bar'));
+    el.classList.toggle('on', (i===0&&p==='today')||(i===1&&p==='candidates')||(i===2&&p==='hiring-bar'));
   });
 }
 

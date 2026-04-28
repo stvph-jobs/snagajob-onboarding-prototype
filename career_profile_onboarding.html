@@ -385,6 +385,40 @@
       color: var(--muted);
       line-height: 1.45;
     }
+    .proto-feedback {
+      margin-top: auto;
+      padding-top: 28px;
+    }
+    .proto-feedback-label {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .proto-feedback-desc {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .proto-feedback-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--purple);
+      text-decoration: none;
+      background: var(--purple-light);
+      border: 1px solid var(--purple-mid);
+      padding: 7px 14px;
+      border-radius: 20px;
+      transition: background 0.15s;
+      font-family: inherit;
+    }
+    .proto-feedback-btn:hover { background: var(--purple-mid); }
   </style>
 </head>
 <body>
@@ -417,6 +451,12 @@
       </div>
     </li>
   </ol>
+
+  <div class="proto-feedback">
+    <p class="proto-feedback-label">Share your thoughts</p>
+    <p class="proto-feedback-desc">Help shape these prototypes — your feedback goes directly to the team.</p>
+    <a class="proto-feedback-btn" href="https://www.notion.so/jobget/34fd0c9b507480df8e54c52cc68e96e4?pvs=106" target="_blank" rel="noopener">Leave feedback →</a>
+  </div>
 </aside>
 
 <div class="app">
